@@ -232,6 +232,8 @@ document.addEventListener('DOMContentLoaded', function () {
       // Let Dawn's native renderContents handle everything — it injects HTML and opens the drawer
       if (cartDrawer && data.sections) {
         cartDrawer.renderContents(data);
+        // renderContents removes is-empty from .drawer__inner but not cart-drawer itself
+        cartDrawer.classList.remove('is-empty');
       }
     })
     .catch(function(err) {
