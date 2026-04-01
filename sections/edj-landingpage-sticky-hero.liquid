@@ -207,6 +207,11 @@ document.addEventListener('DOMContentLoaded', function () {
     btn.innerHTML = 'Adding...';
     btn.disabled = true;
 
+    var cartDrawer = document.querySelector('cart-drawer');
+    var sectionsToRender = cartDrawer
+      ? cartDrawer.getSectionsToRender().map(function(s) { return s.id; })
+      : ['cart-drawer', 'cart-icon-bubble'];
+
     fetch(window.Shopify.routes.root + 'cart/add.js', {
       method: 'POST',
       headers: {
@@ -215,7 +220,7 @@ document.addEventListener('DOMContentLoaded', function () {
       },
       body: JSON.stringify({
         items: [{ id: 49892959781144, quantity: 1 }],
-        sections: 'cart-drawer',
+        sections: sectionsToRender,
         sections_url: window.location.pathname
       })
     })
@@ -224,46 +229,9 @@ document.addEventListener('DOMContentLoaded', function () {
       btn.innerHTML = originalLabel;
       btn.disabled = false;
 
-      var html = data.sections && data.sections['cart-drawer'];
-      if (html) {
-        var parser = new DOMParser();
-        var doc = parser.parseFromString(html, 'text/html');
-
-        // Update each key zone individually
-        var selectors = [
-          '#CartDrawer-CartItems',
-          '#CartDrawer-CartErrors',
-          '.cart-drawer__footer',
-          '.cart-drawer__shipping-tracker'
-        ];
-
-        selectors.forEach(function(selector) {
-          var newEl = doc.querySelector(selector);
-          var oldEl = document.querySelector(selector);
-          if (oldEl && newEl) {
-            oldEl.innerHTML = newEl.innerHTML;
-          }
-        });
-
-        // Sync is-empty class on cart-drawer-items
-        var newDrawerItems = doc.querySelector('cart-drawer-items');
-        var oldDrawerItems = document.querySelector('cart-drawer-items');
-        if (oldDrawerItems && newDrawerItems) {
-          oldDrawerItems.className = newDrawerItems.className;
-        }
-
-        // Sync is-empty class on cart-drawer
-        var newCartDrawer = doc.querySelector('cart-drawer');
-        var oldCartDrawer = document.querySelector('cart-drawer');
-        if (oldCartDrawer && newCartDrawer) {
-          oldCartDrawer.className = newCartDrawer.className;
-        }
-      }
-
-      // Open the drawer
-      var cartDrawer = document.querySelector('cart-drawer');
-      if (cartDrawer && typeof cartDrawer.open === 'function') {
-        cartDrawer.open(btn);
+      // Let Dawn's native renderContents handle everything — it injects HTML and opens the drawer
+      if (cartDrawer && data.sections) {
+        cartDrawer.renderContents(data);
       }
     })
     .catch(function(err) {
