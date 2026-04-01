@@ -17,11 +17,15 @@
   .drawer.active {
     visibility: visible;
   }
-  .drawer.active cart-drawer-items {
-    display: flex;
-    flex-direction: column;
-    flex: 1 1 auto;
-    overflow-y: auto;
+  .drawer__inner {
+    display: flex !important;
+    flex-direction: column !important;
+    height: 100% !important;
+  }
+  cart-drawer-items {
+    flex: 1 1 auto !important;
+    overflow-y: auto !important;
+    min-height: 0 !important;
   }
 
   /* --- SWIPEABLE UPSELL STYLES --- */
