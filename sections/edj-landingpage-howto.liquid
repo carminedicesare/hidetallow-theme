@@ -1,0 +1,331 @@
+<style>
+  .ht-usage-section-{{ section.id }} {
+    /* Color Variables */
+    --bg-color: {{ section.settings.bg_color }};
+    --heading-color: {{ section.settings.heading_color }};
+    --text-color: {{ section.settings.text_color }};
+    --tip-bg-color: {{ section.settings.tip_bg_color }};
+
+    /* Spacing Variables */
+    --padding-mobile: {{ section.settings.padding_mobile }}rem 1.5rem;
+    --padding-desktop: {{ section.settings.padding_desktop }}rem 2rem;
+
+    /* Mobile Typography Variables */
+    --title-size-mobile: {{ section.settings.mobile_title_size }}px;
+    --sub-size-mobile: {{ section.settings.mobile_sub_size }}px;
+    --step-title-mobile: {{ section.settings.mobile_step_title_size }}px;
+    --step-text-mobile: {{ section.settings.mobile_step_text_size }}px;
+    --tip-text-mobile: {{ section.settings.mobile_tip_size }}px;
+
+    /* Desktop Typography Variables */
+    --title-size-desktop: {{ section.settings.desktop_title_size }}px;
+    --sub-size-desktop: {{ section.settings.desktop_sub_size }}px;
+    --step-title-desktop: {{ section.settings.desktop_step_title_size }}px;
+    --step-text-desktop: {{ section.settings.desktop_step_text_size }}px;
+    --tip-text-desktop: {{ section.settings.desktop_tip_size }}px;
+
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    padding: var(--padding-mobile);
+    text-align: center;
+  }
+
+  .ht-usage-section-{{ section.id }} .ht-usage-container {
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+
+  /* --- Headings --- */
+  .ht-usage-section-{{ section.id }} .ht-usage-header-wrap {
+    margin-bottom: 3rem;
+  }
+
+  .ht-usage-section-{{ section.id }} .ht-usage-h2 {
+    font-size: var(--title-size-mobile);
+    font-weight: 700;
+    margin-bottom: 0.8rem;
+    color: var(--heading-color);
+    line-height: 1.2;
+  }
+
+  .ht-usage-section-{{ section.id }} .ht-usage-sub {
+    font-size: var(--sub-size-mobile);
+    opacity: 0.8;
+    max-width: 600px;
+    margin: 0 auto;
+    line-height: 1.5;
+  }
+
+  /* --- 3-Step Grid --- */
+  .ht-usage-section-{{ section.id }} .ht-usage-grid {
+    display: grid;
+    gap: 2.5rem;
+    margin-bottom: 3rem;
+  }
+
+  /* Mobile Layout Logic */
+  .ht-usage-section-{{ section.id }} .ht-layout-stack {
+    grid-template-columns: 1fr;
+  }
+
+  .ht-usage-section-{{ section.id }} .ht-layout-swipe {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    gap: 1.5rem;
+    padding-bottom: 1.5rem; 
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none; /* Hide scrollbar Firefox */
+  }
+  
+  .ht-usage-section-{{ section.id }} .ht-layout-swipe::-webkit-scrollbar {
+    display: none; /* Hide scrollbar Webkit */
+  }
+
+  .ht-usage-section-{{ section.id }} .ht-layout-swipe .ht-usage-step {
+    min-width: 80%; 
+    scroll-snap-align: center;
+  }
+
+  .ht-usage-section-{{ section.id }} .ht-usage-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  /* Circular Image Wrapper */
+  .ht-usage-section-{{ section.id }} .ht-usage-img-wrap {
+    width: 180px;
+    height: 180px;
+    border-radius: 50%;
+    overflow: hidden;
+    margin-bottom: 1.5rem;
+    border: 1px solid rgba(0,0,0,0.05);
+    background-color: #f4f4f4;
+  }
+
+  .ht-usage-section-{{ section.id }} .ht-usage-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.5s ease;
+  }
+
+  .ht-usage-section-{{ section.id }} .ht-usage-step-title {
+    font-size: var(--step-title-mobile);
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--heading-color);
+  }
+
+  .ht-usage-section-{{ section.id }} .ht-usage-step-text {
+    font-size: var(--step-text-mobile);
+    line-height: 1.5;
+    opacity: 0.9;
+    max-width: 300px; /* Widened slightly to prevent cramped text scaling */
+    margin: 0 auto;
+  }
+
+  /* --- Best Moments / Pro Tip Box --- */
+  .ht-usage-section-{{ section.id }} .ht-usage-tip-box {
+    background-color: var(--tip-bg-color);
+    padding: 1.5rem;
+    border-radius: 8px;
+    max-width: 700px;
+    margin: 0 auto;
+    border: 1px solid rgba(0,0,0,0.05);
+  }
+
+  .ht-usage-section-{{ section.id }} .ht-tip-header {
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: calc(var(--tip-text-mobile) * 0.9); /* Header slightly smaller than tip text */
+    margin-bottom: 0.5rem;
+    color: var(--heading-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .ht-usage-section-{{ section.id }} .ht-tip-text {
+    font-size: var(--tip-text-mobile);
+    opacity: 0.9;
+    margin: 0;
+  }
+
+  /* --- Desktop Scaling --- */
+  @media screen and (min-width: 750px) {
+    .ht-usage-section-{{ section.id }} { 
+      padding: var(--padding-desktop); 
+    }
+    
+    .ht-usage-section-{{ section.id }} .ht-usage-container {
+      max-width: 1200px; /* Widened to allow room for larger fonts */
+    }
+
+    .ht-usage-section-{{ section.id }} .ht-usage-h2 { 
+      font-size: var(--title-size-desktop); 
+    }
+    
+    .ht-usage-section-{{ section.id }} .ht-usage-sub { 
+      font-size: var(--sub-size-desktop); 
+    }
+    
+    /* Desktop is always a grid */
+    .ht-usage-section-{{ section.id }} .ht-usage-grid, 
+    .ht-usage-section-{{ section.id }} .ht-layout-swipe {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 3rem; /* Increased gap for larger elements */
+      overflow-x: visible;
+      padding-bottom: 0;
+    }
+    
+    .ht-usage-section-{{ section.id }} .ht-layout-swipe .ht-usage-step { 
+      min-width: auto; 
+    }
+
+    /* Slightly larger images on desktop */
+    .ht-usage-section-{{ section.id }} .ht-usage-img-wrap {
+      width: 220px;
+      height: 220px;
+    }
+
+    /* Pro Touch: Image Zoom on Hover */
+    .ht-usage-section-{{ section.id }} .ht-usage-step:hover .ht-usage-img {
+      transform: scale(1.05);
+    }
+
+    .ht-usage-section-{{ section.id }} .ht-usage-step-title {
+      font-size: var(--step-title-desktop);
+    }
+
+    .ht-usage-section-{{ section.id }} .ht-usage-step-text {
+      font-size: var(--step-text-desktop);
+    }
+
+    .ht-usage-section-{{ section.id }} .ht-usage-tip-box {
+      padding: 2rem;
+    }
+
+    .ht-usage-section-{{ section.id }} .ht-tip-header {
+      font-size: calc(var(--tip-text-desktop) * 0.9);
+    }
+
+    .ht-usage-section-{{ section.id }} .ht-tip-text {
+      font-size: var(--tip-text-desktop);
+    }
+  }
+</style>
+
+<section class="ht-usage-section-{{ section.id }}">
+  <div class="ht-usage-container">
+    
+    <div class="ht-usage-header-wrap">
+      {% if section.settings.heading != blank %}
+        <h2 class="ht-usage-h2">{{ section.settings.heading }}</h2>
+      {% endif %}
+      {% if section.settings.subheading != blank %}
+        <p class="ht-usage-sub">{{ section.settings.subheading }}</p>
+      {% endif %}
+    </div>
+
+    <div class="ht-usage-grid {% if section.settings.mobile_layout == 'swipe' %}ht-layout-swipe{% else %}ht-layout-stack{% endif %}">
+      {% for block in section.blocks %}
+        <div class="ht-usage-step" {{ block.shopify_attributes }}>
+          <div class="ht-usage-img-wrap">
+            {% if block.settings.image != blank %}
+              <img src="{{ block.settings.image | image_url: width: 600 }}" 
+                   class="ht-usage-img" 
+                   alt="{{ block.settings.title }}" 
+                   loading="lazy">
+            {% else %}
+              <div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; background:#e0e0e0; color:#999;">Photo</div>
+            {% endif %}
+          </div>
+          <div class="ht-usage-step-title">{{ block.settings.title }}</div>
+          <div class="ht-usage-step-text">{{ block.settings.text }}</div>
+        </div>
+      {% endfor %}
+    </div>
+
+    <div class="ht-usage-tip-box">
+      <div class="ht-tip-header">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+        Best Moments to Apply
+      </div>
+      <p class="ht-tip-text">{{ section.settings.best_moments }}</p>
+    </div>
+
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Landing Page - How To",
+  "tag": "section",
+  "class": "section",
+  "max_blocks": 3,
+  "settings": [
+    { "type": "header", "content": "Layout" },
+    { "type": "select", "id": "mobile_layout", "label": "Mobile Layout", "options": [
+      { "value": "stack", "label": "Stack (Recommended for 'How-To')" },
+      { "value": "swipe", "label": "Swipe (Carousel)" }
+    ], "default": "stack" },
+    
+    { "type": "header", "content": "Colors" },
+    { "type": "color", "id": "bg_color", "label": "Background Color", "default": "#ffffff" },
+    { "type": "color", "id": "heading_color", "label": "Heading Color", "default": "#0e3a27" },
+    { "type": "color", "id": "text_color", "label": "Text Color", "default": "#333333" },
+    { "type": "color", "id": "tip_bg_color", "label": "Tip Box Background", "default": "#f9f9f9" },
+    
+    { "type": "header", "content": "Spacing" },
+    { "type": "range", "id": "padding_desktop", "label": "Desktop Padding", "min": 2, "max": 10, "step": 1, "unit": "rem", "default": 6 },
+    { "type": "range", "id": "padding_mobile", "label": "Mobile Padding", "min": 2, "max": 6, "step": 1, "unit": "rem", "default": 4 },
+    
+    { "type": "header", "content": "Typography (Desktop)" },
+    { "type": "range", "id": "desktop_title_size", "label": "Main Heading Size", "min": 24, "max": 60, "step": 1, "unit": "px", "default": 42 },
+    { "type": "range", "id": "desktop_sub_size", "label": "Subheading Size", "min": 14, "max": 32, "step": 1, "unit": "px", "default": 18 },
+    { "type": "range", "id": "desktop_step_title_size", "label": "Step Title Size", "min": 14, "max": 32, "step": 1, "unit": "px", "default": 18 },
+    { "type": "range", "id": "desktop_step_text_size", "label": "Step Description Size", "min": 12, "max": 24, "step": 1, "unit": "px", "default": 16 },
+    { "type": "range", "id": "desktop_tip_size", "label": "Tip Text Size", "min": 12, "max": 24, "step": 1, "unit": "px", "default": 16 },
+
+    { "type": "header", "content": "Typography (Mobile)" },
+    { "type": "range", "id": "mobile_title_size", "label": "Main Heading Size", "min": 20, "max": 48, "step": 1, "unit": "px", "default": 32 },
+    { "type": "range", "id": "mobile_sub_size", "label": "Subheading Size", "min": 12, "max": 24, "step": 1, "unit": "px", "default": 16 },
+    { "type": "range", "id": "mobile_step_title_size", "label": "Step Title Size", "min": 12, "max": 24, "step": 1, "unit": "px", "default": 16 },
+    { "type": "range", "id": "mobile_step_text_size", "label": "Step Description Size", "min": 10, "max": 20, "step": 1, "unit": "px", "default": 14 },
+    { "type": "range", "id": "mobile_tip_size", "label": "Tip Text Size", "min": 10, "max": 20, "step": 1, "unit": "px", "default": 14 },
+
+    { "type": "header", "content": "Headings & Tip Box" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "A little goes a long way." },
+    { "type": "text", "id": "subheading", "label": "Subheading", "default": "Follow these simple steps for the best results." },
+    { "type": "textarea", "id": "best_moments", "label": "Best Moments Text", "default": "Immediately after a shower • On dry hands & knuckles • Before bed as a night mask" }
+  ],
+  "blocks": [
+    {
+      "type": "step",
+      "name": "Step",
+      "settings": [
+        { "type": "image_picker", "id": "image", "label": "Step Image" },
+        { "type": "text", "id": "title", "label": "Step Title", "default": "1. Scoop" },
+        { "type": "textarea", "id": "text", "label": "Step Description", "default": "Start with a pea-sized amount. Pure tallow is highly concentrated." }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Landing Page - How To",
+      "blocks": [
+        { "type": "step", "settings": { "title": "1. Scoop Small", "text": "Start with a pea-sized amount. Pure tallow is highly concentrated, so less is more." } },
+        { "type": "step", "settings": { "title": "2. Warm It Up", "text": "Rub between your palms for 5 seconds. The natural heat melts the balm into a silky oil." } },
+        { "type": "step", "settings": { "title": "3. Apply Anywhere", "text": "Massage into face, hands, or dry patches. It absorbs quickly without being greasy." } }
+      ]
+    }
+  ]
+}
+{% endschema %}

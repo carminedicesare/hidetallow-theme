@@ -1,0 +1,236 @@
+{%- style -%}
+  .sticky-bar-{{ section.id }} {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background-color: {{ section.settings.bg_color }};
+    {% if section.settings.bg_image != blank %}
+      background-image: url('{{ section.settings.bg_image | image_url: width: 2000 }}');
+      background-size: 150%;
+      background-position: center;
+    {% endif %}
+    color: {{ section.settings.text_color }};
+    padding: 14px 24px;
+    /* CHANGED: Lower Z-Index allows drawer to cover it naturally */
+    z-index: 90; 
+    box-shadow: 0 -4px 20px rgba(0,0,0,0.15);
+    transform: translateY(100%);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    border-top: 1px solid rgba(0,0,0,0.05);
+  }
+
+  .sticky-bar-{{ section.id }}.is-visible {
+    transform: translateY(0);
+  }
+
+  /* Force hide class */
+  .sticky-bar-{{ section.id }}.force-hide {
+    transform: translateY(100%) !important;
+    visibility: hidden !important;
+  }
+
+  .sticky-bar-left {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+    flex-grow: 1;
+  }
+
+  .sticky-product-line {
+    font-size: 14px;
+    font-weight: 900;
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #0E3A27; 
+    line-height: 1.2;
+  }
+
+  .sticky-selection-details {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: #1a1a1a;
+    opacity: 0.8;
+    margin-top: 4px;
+    line-height: 1.2;
+  }
+
+  .sticky-bar-right {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+  }
+
+  .sticky-bar-btn {
+    background-color: {{ section.settings.btn_bg_color }};
+    color: {{ section.settings.btn_text_color }};
+    padding: 14px 32px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 800;
+    font-size: 13px;
+    white-space: nowrap;
+    transition: all 0.2s ease;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    box-shadow: 0 4px 12px rgba(14, 58, 39, 0.2);
+  }
+
+  @media(max-width: 600px) {
+    .sticky-bar-{{ section.id }} { padding: 12px 16px; gap: 10px; }
+    .sticky-product-line { font-size: 11px; }
+    .sticky-selection-details { font-size: 8px; margin-top: 2px; }
+    .sticky-bar-btn { padding: 12px 20px; font-size: 11px; }
+  }
+{%- endstyle -%}
+
+<div id="sticky-bar-{{ section.id }}" class="sticky-bar-{{ section.id }}">
+  <div class="sticky-bar-left">
+    <p class="sticky-product-line">
+      {{ product.title }} <span id="sticky-variant-name-{{ section.id }}"></span>
+    </p>
+    <div id="sticky-details-{{ section.id }}" class="sticky-selection-details"></div>
+  </div>
+  
+  <div class="sticky-bar-right">
+    <button type="button" id="sticky-submit-{{ section.id }}" class="sticky-bar-btn">
+       <span id="sticky-price-{{ section.id }}"></span> — {{ section.settings.btn_label }}
+    </button>
+  </div>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const stickyBar = document.getElementById("sticky-bar-{{ section.id }}");
+    const stickyBtn = document.getElementById("sticky-submit-{{ section.id }}");
+    const stickyPrice = document.getElementById("sticky-price-{{ section.id }}");
+    const stickyVariant = document.getElementById("sticky-variant-name-{{ section.id }}");
+    const stickyDetails = document.getElementById("sticky-details-{{ section.id }}");
+    const mainAtcButton = document.querySelector('.product-form__submit.ht-premium-atc-rect-white');
+
+    // --- 1. DATA SYNCING ---
+    function syncStickyData() {
+      const activeTile = document.querySelector('.ht-scent-tile.is-active .ht-tile-label') || 
+                         document.querySelector('.product-variant-picker .is-active') ||
+                         document.querySelector('input[name="Scent"]:checked + label');
+      const activePack = document.querySelector('.ht-pack-card.is-active .ht-card-label');
+      const activePurchase = document.querySelector('.ht-proxy-card.is-active .ht-proxy-label');
+      const priceVal = document.querySelector('.ht-price-value') || 
+                       document.querySelector('.ht-proxy-card.is-active .ht-proxy-price') ||
+                       document.querySelector('.price-item--regular');
+
+      if (activeTile && stickyVariant) stickyVariant.innerText = " — " + activeTile.innerText.trim();
+
+      let detailParts = [];
+      if (activePack) detailParts.push(activePack.innerText.trim());
+      if (activePurchase) detailParts.push(activePurchase.innerText.trim());
+      if (stickyDetails) stickyDetails.innerText = detailParts.join(' — ');
+
+      if (priceVal && stickyPrice) stickyPrice.innerText = priceVal.innerText.trim();
+    }
+
+    // --- 2. UNIVERSAL DRAWER DETECTION ---
+    const triggerHeight = {{ section.settings.scroll_trigger }}; 
+    
+    function checkVisibility() {
+      // Logic A: Check if body scroll is locked (Universal Drawer Sign)
+      const bodyStyle = window.getComputedStyle(document.body);
+      const isScrollLocked = bodyStyle.overflow === 'hidden' || document.documentElement.style.overflow === 'hidden';
+      
+      // Logic B: Check standard classes
+      const hasActiveClass = document.body.classList.contains('cart-drawer--active') || 
+                             document.body.classList.contains('is-open') ||
+                             document.querySelector('.cart-drawer.active');
+
+      if (isScrollLocked || hasActiveClass) {
+        stickyBar.classList.add('force-hide');
+      } else {
+        stickyBar.classList.remove('force-hide');
+        
+        // Only show if scrolled past trigger
+        if (window.scrollY > triggerHeight) {
+          stickyBar.classList.add('is-visible');
+        } else {
+          stickyBar.classList.remove('is-visible');
+        }
+      }
+    }
+
+    // --- 3. LISTENERS ---
+    window.addEventListener("scroll", checkVisibility);
+    
+    // Watch for ANY style change on BODY (covers 99% of drawers)
+    const bodyObserver = new MutationObserver(checkVisibility);
+    bodyObserver.observe(document.body, { attributes: true, attributeFilter: ['style', 'class'] });
+    bodyObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['style', 'class'] });
+
+    stickyBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      if (mainAtcButton) mainAtcButton.click();
+    });
+
+    const observer = new MutationObserver(syncStickyData);
+    const infoContainer = document.querySelector('.product__info-container');
+    if (infoContainer) observer.observe(infoContainer, { childList: true, subtree: true, characterData: true, attributes: true });
+
+    setTimeout(syncStickyData, 600);
+  });
+</script>
+
+{% schema %}
+{
+  "name": "PDP Floating ATC",
+  "settings": [
+    {
+      "type": "text",
+      "id": "btn_label",
+      "label": "Button Text",
+      "default": "ADD TO CART"
+    },
+    {
+      "type": "number",
+      "id": "scroll_trigger",
+      "label": "Show after (px)",
+      "default": 400
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Fallback Background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text Color",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "btn_bg_color",
+      "label": "Button Background",
+      "default": "#0e3a27"
+    },
+    {
+      "type": "color",
+      "id": "btn_text_color",
+      "label": "Button Text",
+      "default": "#ffffff"
+    },
+    {
+      "type": "image_picker",
+      "id": "bg_image",
+      "label": "Marble Background Image"
+    }
+  ],
+  "presets": [{ "name": "PDP Floating ATC" }]
+}
+{% endschema %}

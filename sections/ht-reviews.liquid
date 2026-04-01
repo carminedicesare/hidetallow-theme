@@ -1,0 +1,198 @@
+{% comment %}
+  Section: HT — Reviews (scrollable, editable, pre-seeded)
+  File: sections/ht-reviews.liquid
+{% endcomment %}
+
+<section id="ht-reviews-{{ section.id }}" class="ht-reviews" style="background: {{ section.settings.bg }};">
+  <style>
+    #ht-reviews-{{ section.id }}{ padding:48px 20px; text-align:center; }
+    #ht-reviews-{{ section.id }} .rv-title{ font-size:26px; font-weight:800; margin:0 0 12px; color:{{ section.settings.heading_color }}; }
+    #ht-reviews-{{ section.id }} .rv-sub{ font-size:15px; color:{{ section.settings.text_color }}; max-width:580px; margin:0 auto 32px; }
+
+    #ht-reviews-{{ section.id }} .rv-track{
+      display:flex; gap:16px; padding-bottom:16px;
+      overflow-x:auto; -webkit-overflow-scrolling:touch;
+    }
+
+    #ht-reviews-{{ section.id }} .rv-card{
+      flex:0 0 {{ section.settings.tile_width }}px;
+      scroll-snap-align:start;
+      background:{{ section.settings.tile_bg }};
+      border-radius:16px; padding:20px; text-align:left;
+    }
+    #ht-reviews-{{ section.id }} .rv-stars{ display:flex; gap:4px; margin:0 0 8px; }
+    #ht-reviews-{{ section.id }} .rv-quote{ font-size:14px; color:#333; font-style:italic; margin:0; }
+    #ht-reviews-{{ section.id }} .rv-badge{
+      display:inline-flex; align-items:center; gap:6px;
+      margin-top:12px; font-size:12px; color:{{ section.settings.badge_color }};
+      font-weight:600;
+    }
+    #ht-reviews-{{ section.id }} .rv-meta{ margin-top:6px; font-weight:700; font-size:13px; color:#888; }
+
+    #ht-reviews-{{ section.id }} .rv-progress-wrap{
+      margin:10px auto 0; height:4px; background:#eee; width:100%; max-width:320px; border-radius:2px; overflow:hidden; display:none;
+    }
+    #ht-reviews-{{ section.id }} .rv-progress{ height:100%; width:0%; background:{{ section.settings.progress_color }}; transition:width .2s ease; }
+
+    @media (min-width: 990px){
+      {% if section.settings.desktop_layout == 'grid' %}
+        #ht-reviews-{{ section.id }} .rv-track{ overflow:visible; flex-wrap:wrap; justify-content:center; }
+        #ht-reviews-{{ section.id }} .rv-card{ flex:0 0 calc(25% - 12px); }
+      {% elsif section.settings.desktop_layout == 'center' %}
+        #ht-reviews-{{ section.id }} .rv-track{ justify-content:center; }
+      {% endif %}
+    }
+    @media (max-width: 989px){
+      {% if section.settings.show_progress_bar %}
+        #ht-reviews-{{ section.id }} .rv-progress-wrap{ display:block; }
+      {% endif %}
+    }
+
+    /* Certification badge */
+    #ht-reviews-{{ section.id }} .rv-cert{
+      margin: 20px auto 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 8px 16px;
+      border-radius: 999px;
+      background: rgba(0,0,0,.05);
+      font-size: 12px;
+      font-weight: 600;
+      color: {{ section.settings.text_color }};
+      opacity: .9;
+      letter-spacing: .02em;
+    }
+  </style>
+
+  {% if section.settings.title != blank %}
+    <h2 class="rv-title">{{ section.settings.title }}</h2>
+  {% endif %}
+  {% if section.settings.subtitle != blank %}
+    <p class="rv-sub">{{ section.settings.subtitle }}</p>
+  {% endif %}
+
+  <div class="rv-track" id="rv-track-{{ section.id }}">
+    {% for block in section.blocks %}
+      {% if block.type == 'review' %}
+      <article class="rv-card">
+        {% assign rating = block.settings.rating | default: 5 %}
+        <div class="rv-stars" aria-label="{{ rating }} out of 5 stars">
+          {% for i in (1..5) %}
+            <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"
+                fill="{% if i <= rating %}{{ section.settings.star_color }}{% else %}#ddd{% endif %}"/>
+            </svg>
+          {% endfor %}
+        </div>
+
+        {% if block.settings.quote != blank %}
+          <p class="rv-quote">“{{ block.settings.quote }}”</p>
+        {% endif %}
+
+        {% if block.settings.verified %}
+          <div class="rv-badge">
+            <svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true">
+              <path fill="{{ section.settings.badge_color }}" d="M9 16.17 4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+            </svg>
+            <span>Verified Customer</span>
+          </div>
+        {% endif %}
+
+        <div class="rv-meta">– {{ block.settings.author }}{% if block.settings.date != blank %}, {{ block.settings.date }}{% endif %}</div>
+      </article>
+      {% endif %}
+    {% endfor %}
+  </div>
+
+  {% if section.settings.show_progress_bar %}
+    <div class="rv-progress-wrap">
+      <div class="rv-progress" id="rv-progress-{{ section.id }}"></div>
+    </div>
+  {% endif %}
+
+  {% if section.settings.footer_note != blank %}
+    <p style="font-size:13px; color:#888; margin-top:24px;">{{ section.settings.footer_note }}</p>
+  {% endif %}
+
+  {% if section.settings.show_cert_badge %}
+    <div class="rv-cert">
+      {% if section.settings.cert_link != blank %}
+        <a href="{{ section.settings.cert_link }}" target="_blank" rel="noopener" style="color:inherit; text-decoration:none;">
+          {{ section.settings.cert_text }}
+        </a>
+      {% else %}
+        {{ section.settings.cert_text }}
+      {% endif %}
+    </div>
+  {% endif %}
+
+  {% if section.settings.show_progress_bar %}
+  <script>
+    (function(){
+      var track = document.getElementById('rv-track-{{ section.id }}');
+      var bar   = document.getElementById('rv-progress-{{ section.id }}');
+      if(!track || !bar) return;
+
+      function update(){
+        var max = track.scrollWidth - track.clientWidth;
+        if (max <= 0) { bar.style.width = '100%'; return; }
+        bar.style.width = (track.scrollLeft / max) * 100 + '%';
+      }
+      track.addEventListener('scroll', update, { passive:true });
+      if ('IntersectionObserver' in window){
+        var once=false, io=new IntersectionObserver(function(es){
+          es.forEach(function(e){ if(e.isIntersecting && !once){ once=true; update(); }});
+        }, { threshold:0.1 });
+        io.observe(track);
+      } else { update(); }
+    })();
+  </script>
+  {% endif %}
+</section>
+
+{% schema %}
+{
+  "name": "HT • Reviews (scrollable)",
+  "settings": [
+    { "type": "text", "id": "title", "label": "Title", "default": "Real Skin. Real Results." },
+    { "type": "text", "id": "subtitle", "label": "Subtitle", "default": "See what real people are saying after switching to tallow that actually works." },
+    { "type": "select", "id": "desktop_layout", "label": "Desktop layout", "default": "center",
+      "options": [
+        { "value": "center", "label": "Single row, centered (scroll if needed)" },
+        { "value": "grid", "label": "Grid (4-up)" }
+      ]
+    },
+    { "type": "range", "id": "tile_width", "label": "Card width (px) on mobile", "min": 220, "max": 300, "step": 10, "default": 260 },
+    { "type": "checkbox", "id": "show_progress_bar", "label": "Show mobile progress bar", "default": true },
+    { "type": "color", "id": "bg", "label": "Background", "default": "#ffffff" },
+    { "type": "color", "id": "tile_bg", "label": "Card background", "default": "#f9f9f9" },
+    { "type": "color", "id": "heading_color", "label": "Heading color", "default": "#1a1a1a" },
+    { "type": "color", "id": "text_color", "label": "Body text color", "default": "#555555" },
+    { "type": "color", "id": "star_color", "label": "Star color", "default": "#FFD700" },
+    { "type": "color", "id": "badge_color", "label": "Verified badge color", "default": "#4CAF50" },
+    { "type": "text", "id": "footer_note", "label": "Footer note", "default": "Trusted by thousands of real customers. No gimmicks — just results." },
+
+    { "type": "checkbox", "id": "show_cert_badge", "label": "Show verification badge", "default": true },
+    { "type": "text", "id": "cert_text", "label": "Badge text", "default": "Collected & Certified by Yotpo" },
+    { "type": "url", "id": "cert_link", "label": "Optional link (e.g. https://www.yotpo.com/)" }
+  ],
+  "blocks": [
+    {
+      "type": "review",
+      "name": "Review",
+      "settings": [
+        { "type": "range", "id": "rating", "label": "Rating", "min": 1, "max": 5, "step": 1, "default": 5 },
+        { "type": "textarea", "id": "quote", "label": "Quote", "default": "Price, scent, texture — it’s perfect!" },
+        { "type": "checkbox", "id": "verified", "label": "Show Verified badge", "default": true },
+        { "type": "text", "id": "author", "label": "Author", "default": "Jane D." },
+        { "type": "text", "id": "date", "label": "Date (free text)", "default": "May 8, 2025" }
+      ]
+    }
+  ],
+  "max_blocks": 30,
+  "presets": [
+    { "name": "HT • Reviews (scrollable)" }
+  ]
+}
+{% endschema %}

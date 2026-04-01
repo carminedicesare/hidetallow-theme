@@ -1,0 +1,62 @@
+{% comment %}
+  Section: HT — Objection Handling
+  File: sections/ht-objection.liquid
+{% endcomment %}
+
+<section id="ht-objection-{{ section.id }}" class="ht-objection" style="background: {{ section.settings.bg }}; color: {{ section.settings.text_color }}; text-align: center; padding: 48px 20px;">
+  <style>
+    #ht-objection-{{ section.id }} h2 {
+      font-size: 24px;
+      font-weight: 800;
+      margin-bottom: 14px;
+      color: {{ section.settings.heading_color }};
+    }
+    #ht-objection-{{ section.id }} p {
+      max-width: 600px;
+      margin: 0 auto 20px;
+      line-height: 1.7;
+    }
+    #ht-objection-{{ section.id }} .intro {
+      font-size: 16px;
+      color: {{ section.settings.subtext_color }};
+      margin-bottom: 20px;
+    }
+    #ht-objection-{{ section.id }} .body {
+      font-size: 16px;
+      color: {{ section.settings.text_color }};
+    }
+  </style>
+
+  {% if section.settings.title != blank %}
+    <h2>{{ section.settings.title }}</h2>
+  {% endif %}
+  {% if section.settings.intro != blank %}
+    <p class="intro">{{ section.settings.intro }}</p>
+  {% endif %}
+  {% if section.settings.body != blank %}
+    <p class="body">{{ section.settings.body }}</p>
+  {% endif %}
+</section>
+
+{% schema %}
+{
+  "name": "HT • Objection Handling",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    { "type": "text", "id": "title", "label": "Heading", "default": "Why Are You Still Overpaying for Skincare?" },
+    { "type": "textarea", "id": "intro", "label": "Intro text", "default": "Most brands overcomplicate it — we kept it simple, effective, and honest." },
+    { "type": "richtext", "id": "body", "label": "Body text", "default": "<p>We stripped out the fluff — literally.<br>No fillers. No fake luxury. No BS.<br>Just one ingredient your skin actually understands: 100% grass-fed tallow.<br><br>It works. And it’s only $10.<br>Spend $40? Shipping’s just $2. Hit $50? It’s free.</p>" },
+    { "type": "color", "id": "bg", "label": "Background color", "default": "#1a1a1a" },
+    { "type": "color", "id": "heading_color", "label": "Heading color", "default": "#ffffff" },
+    { "type": "color", "id": "text_color", "label": "Main text color", "default": "#bbbbbb" },
+    { "type": "color", "id": "subtext_color", "label": "Intro text color", "default": "#cccccc" }
+  ],
+  "presets": [
+    {
+      "name": "HT • Objection Handling",
+      "category": "Product"
+    }
+  ]
+}
+{% endschema %}

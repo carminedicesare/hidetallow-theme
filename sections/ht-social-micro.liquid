@@ -1,0 +1,334 @@
+{% comment %}
+HT • About Story (Chapters w/ optional scrollable media)
+- Pillar (icon/title/caption) ON TOP
+- Micro-story text under it
+- Optional media (up to 6 images) per chapter
+- Media layouts: scroll | grid | single
+- Scroll mode supports snap
+{% endcomment %}
+
+<section class="ht-social-micro-story" id="ht-story-{{ section.id }}">
+  <div class="ht-social-micro-story__inner page-width">
+
+    {% if section.settings.heading != blank %}
+      <h1 class="ht-social-micro-story__heading">{{ section.settings.heading | escape }}</h1>
+    {% endif %}
+
+    {% for block in section.blocks %}
+      {% case block.type %}
+      {% when 'chapter' %}
+        <article class="ht-chapter" {{ block.shopify_attributes }}>
+
+          {%- comment -%} PILLAR (icon over text) {%- endcomment -%}
+          <header class="ht-pillar">
+            <div class="ht-pillar__icon" style="--icon-size: {{ block.settings.icon_size }}px; --icon-color: {{ block.settings.icon_color }};">
+              {% if block.settings.icon_svg != blank %}
+                <div class="ht-pillar__svg">{{ block.settings.icon_svg }}</div>
+              {% elsif block.settings.icon_img != blank %}
+                {{ block.settings.icon_img | image_url: width: 256 | image_tag:
+                  loading: 'lazy',
+                  widths: '64,96,128,192,256',
+                  class: 'ht-pillar__img',
+                  alt: block.settings.title }}
+              {% endif %}
+            </div>
+            {% if block.settings.title != blank %}
+              <h3 class="ht-pillar__title">{{ block.settings.title }}</h3>
+            {% endif %}
+            {% if block.settings.caption != blank %}
+              <p class="ht-pillar__caption">{{ block.settings.caption | escape }}</p>
+            {% endif %}
+          </header>
+
+          {%- comment -%} MICRO-STORY {%- endcomment -%}
+          {% if block.settings.story != blank %}
+            <div class="ht-chapter__copy rte" style="--copy-max: {{ section.settings.copy_max }}ch;">
+              {{ block.settings.story }}
+            </div>
+          {% endif %}
+
+          {%- comment -%} MEDIA (optional; supports scroll / grid / single) {%- endcomment -%}
+          {% assign imgs = '' %}
+          {% assign possible = "image_1|image_2|image_3|image_4|image_5|image_6|image_7|image_8|image_9|image_10" | split: "|" %}
+          {% for key in possible %}
+            {% assign img = block.settings[key] %}
+            {% if img != blank %}
+              {% assign imgs = imgs | append: key | append: "," %}
+            {% endif %}
+          {% endfor %}
+          {% assign imgs = imgs | split: "," | uniq %}
+
+          {% if imgs.size > 0 and imgs.first != '' %}
+            {% if block.settings.media_layout == 'scroll' %}
+              <div class="ht-media ht-media--scroll{% if block.settings.media_snap %} is-snap{% endif %}" style="--media-h: {{ block.settings.media_height }}px; --media-gap: {{ block.settings.media_gap }}px; --media-radius: {{ block.settings.media_radius }}px; --media-bg: {{ block.settings.media_bg }};">
+                <div class="ht-media__rail">
+                  {% for k in imgs %}
+                    {% assign im = block.settings[k] %}
+                    {% if im != blank %}
+                      <figure class="ht-media__item">
+                        {{ im | image_url: width: 1600 | image_tag: loading: 'lazy', class: 'ht-media__img' }}
+                      </figure>
+                    {% endif %}
+                  {% endfor %}
+                </div>
+              </div>
+            {% elsif block.settings.media_layout == 'grid' %}
+              <div class="ht-media ht-media--grid" style="--media-h: {{ block.settings.media_height }}px; --media-gap: {{ block.settings.media_gap }}px; --media-radius: {{ block.settings.media_radius }}px; --media-bg: {{ block.settings.media_bg }};">
+                {% for k in imgs %}
+                  {% assign im = block.settings[k] %}
+                  {% if im != blank %}
+                    <figure class="ht-media__item">
+                      {{ im | image_url: width: 1600 | image_tag: loading: 'lazy', class: 'ht-media__img' }}
+                    </figure>
+                  {% endif %}
+                {% endfor %}
+              </div>
+            {% else %}
+              {%- comment -%} single {%- endcomment -%}
+              {% assign first_key = imgs.first %}
+              {% assign first_img = block.settings[first_key] %}
+              {% if first_img != blank %}
+                <div class="ht-media ht-media--single" style="--media-h: {{ block.settings.media_height }}px; --media-gap: {{ block.settings.media_gap }}px; --media-radius: {{ block.settings.media_radius }}px; --media-bg: {{ block.settings.media_bg }};">
+                  <figure class="ht-media__item">
+                    {{ first_img | image_url: width: 2000 | image_tag: loading: 'lazy', class: 'ht-media__img' }}
+                  </figure>
+                </div>
+              {% endif %}
+            {% endif %}
+          {% endif %}
+
+        </article>
+      {% endcase %}
+    {% endfor %}
+
+  </div>
+
+  <style>
+    .ht-social-micro-story{
+      padding: {{ section.settings.pad_y }}px 0;
+      background-color: {{ section.settings.bg }};
+      color: {{ section.settings.text_color }};
+    }
+    .ht-social-micro-story__heading{
+      margin: 0 0 {{ section.settings.heading_mb }}px;
+      text-align: center;
+      font-weight: 800;
+      letter-spacing: -0.01em;
+      color: {{ section.settings.heading_color }};
+      font-size: clamp(28px, 4.2vw, {{ section.settings.heading_size }}px);
+      line-height: 1.15;
+    }
+
+    .ht-chapter{ margin-bottom: {{ section.settings.chapter_gap }}px; }
+
+    /* Pillar (icon top, title, caption) */
+    .ht-pillar{
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 6px;
+      margin-bottom: 10px;
+    }
+    .ht-pillar__icon{
+      color: var(--icon-color);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .ht-pillar__img{ width: var(--icon-size); height: var(--icon-size); object-fit: contain; display: block; }
+    .ht-pillar__svg :where(svg){
+      width: var(--icon-size); height: var(--icon-size); display: block;
+      color: var(--icon-color); fill: currentColor; /* recolor svg paths using currentColor */
+    }
+    .ht-pillar__title{
+      font-weight: 800;
+      font-size: {{ section.settings.pillar_title_size }}px;
+      color: {{ section.settings.pillar_title_color }};
+      line-height: 1.2;
+      letter-spacing: -0.01em;
+    }
+    .ht-pillar__caption{
+      margin: 0;
+      font-size: {{ section.settings.pillar_caption_size }}px;
+      color: {{ section.settings.pillar_caption_color }};
+      opacity: .95;
+      line-height: 1.35;
+    }
+
+    /* Micro-story */
+    .ht-chapter__copy{
+      max-width: var(--copy-max, 70ch);
+      margin: 0 auto {{ section.settings.copy_mb }}px;
+      text-align: {{ section.settings.copy_align }};
+      font-size: 16px; line-height: 1.7;
+    }
+    .ht-chapter__copy p{ margin: 0 0 12px; }
+
+    /* Media: shared */
+    .ht-media{
+      --gap: var(--media-gap, 12px);
+    }
+    .ht-media__item{
+      background: var(--media-bg);
+      border-radius: var(--media-radius, 0px);
+      overflow: hidden;
+    }
+    .ht-media__img{
+      width: 100%; height: auto; display: block;
+      max-height: var(--media-h, 320px);
+      object-fit: cover;
+    }
+
+    /* Single */
+    .ht-media--single{
+      max-width: 980px;
+      margin: 0 auto;
+    }
+
+    /* Grid */
+    .ht-media--grid{
+      display: grid;
+      gap: var(--gap);
+      grid-template-columns: repeat(3, 1fr);
+    }
+    @media (max-width: 990px){
+      .ht-media--grid{ grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 640px){
+      .ht-media--grid{ grid-template-columns: 1fr; }
+    }
+
+    /* Scroll */
+    .ht-media--scroll{
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    .ht-media--scroll .ht-media__rail{
+      display: flex; gap: var(--gap);
+      padding-bottom: 4px;
+      scroll-padding-left: 12px;
+    }
+    .ht-media--scroll .ht-media__item{
+      flex: 0 0 auto;
+      width: clamp(220px, 40vw, 420px);
+    }
+    .ht-media--scroll.is-snap .ht-media__rail{
+      scroll-snap-type: x mandatory;
+    }
+    .ht-media--scroll.is-snap .ht-media__item{
+      scroll-snap-align: start;
+    }
+  </style>
+</section>
+
+{% schema %}
+{
+  "name": "HT • Social Micro",
+  "settings": [
+    { "type": "text", "id": "heading", "label": "Heading", "default": "We Couldn’t Find It. So We Made It." },
+    { "type": "range", "id": "heading_size", "label": "Max heading size (px)", "min": 28, "max": 56, "step": 2, "default": 40 },
+    { "type": "range", "id": "heading_mb", "label": "Space below heading (px)", "min": 0, "max": 80, "step": 2, "default": 12 },
+
+    { "type": "range", "id": "pad_y", "label": "Section vertical padding", "min": 0, "max": 120, "step": 4, "default": 40 },
+    { "type": "color", "id": "bg", "label": "Background color", "default": "#ffffff" },
+    { "type": "color", "id": "text_color", "label": "Body text color", "default": "#1a1a1a" },
+
+    { "type": "select", "id": "copy_align", "label": "Micro-story alignment", "default": "center", "options": [
+      { "value": "left", "label": "Left" },
+      { "value": "center", "label": "Center" },
+      { "value": "right", "label": "Right" }
+    ]},
+    { "type": "range", "id": "copy_max", "label": "Micro-story max width (ch)", "min": 40, "max": 90, "step": 1, "default": 70 },
+    { "type": "range", "id": "copy_mb", "label": "Space below micro-story (px)", "min": 0, "max": 60, "step": 2, "default": 16 },
+
+    { "type": "range", "id": "chapter_gap", "label": "Space between chapters (px)", "min": 12, "max": 120, "step": 4, "default": 44 },
+
+    { "type": "color", "id": "pillar_title_color", "label": "Pillar title color", "default": "#1a1a1a" },
+    { "type": "range", "id": "pillar_title_size", "label": "Pillar title size (px)", "min": 14, "max": 24, "step": 1, "default": 18 },
+    { "type": "color", "id": "pillar_caption_color", "label": "Pillar caption color", "default": "#333333" },
+    { "type": "range", "id": "pillar_caption_size", "label": "Pillar caption size (px)", "min": 11, "max": 16, "step": 1, "default": 13 },
+
+    { "type": "color", "id": "heading_color", "label": "Heading color", "default": "#1a1a1a" }
+  ],
+  "blocks": [
+    {
+      "type": "chapter",
+      "name": "Chapter",
+      "settings": [
+        { "type": "image_picker", "id": "icon_img", "label": "Icon image (PNG/SVG)" },
+        { "type": "textarea", "id": "icon_svg", "label": "OR paste raw SVG (overrides image)", "info": "Use fill=\"currentColor\" to inherit color." },
+        { "type": "color", "id": "icon_color", "label": "Icon color", "default": "#1a1a1a" },
+        { "type": "range", "id": "icon_size", "label": "Icon size (px)", "min": 24, "max": 120, "step": 4, "default": 48 },
+
+        { "type": "text", "id": "title", "label": "Pillar title", "default": "Born From Purpose" },
+        { "type": "textarea", "id": "caption", "label": "Pillar caption (short)", "default": "Cancer changed what “clean” meant." },
+
+        { "type": "richtext", "id": "story", "label": "Micro-story (rich text)", "default": "<p>Tell this chapter’s story here.</p>" },
+
+        { "type": "select", "id": "media_layout", "label": "Media layout", "default": "scroll", "options": [
+          { "value": "scroll", "label": "Scrollable (horizontal)" },
+          { "value": "grid", "label": "Grid (responsive)" },
+          { "value": "single", "label": "Single image (centered)" }
+        ]},
+        { "type": "checkbox", "id": "media_snap", "label": "Enable snap in scroll mode", "default": true },
+
+        { "type": "range", "id": "media_height", "label": "Media max height (px)", "min": 160, "max": 640, "step": 10, "default": 360 },
+        { "type": "range", "id": "media_gap", "label": "Media gap (px)", "min": 4, "max": 40, "step": 2, "default": 12 },
+        { "type": "range", "id": "media_radius", "label": "Media corner radius (px)", "min": 0, "max": 28, "step": 1, "default": 12 },
+        { "type": "color", "id": "media_bg", "label": "Media background (image frame)", "default": "#f7f7f7" },
+
+        { "type": "image_picker", "id": "image_1", "label": "Image 1" },
+        { "type": "image_picker", "id": "image_2", "label": "Image 2" },
+        { "type": "image_picker", "id": "image_3", "label": "Image 3" },
+        { "type": "image_picker", "id": "image_4", "label": "Image 4" },
+        { "type": "image_picker", "id": "image_5", "label": "Image 5" },
+        { "type": "image_picker", "id": "image_6", "label": "Image 6" },
+         { "type": "image_picker", "id": "image_7", "label": "Image 7" },
+          { "type": "image_picker", "id": "image_8", "label": "Image 8" },
+           { "type": "image_picker", "id": "image_9", "label": "Image 9" },
+            { "type": "image_picker", "id": "image_10", "label": "Image 10" },
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "HT • About Story",
+      "blocks": [
+        {
+          "type": "chapter",
+          "settings": {
+            "title": "Born From Purpose",
+            "caption": "Cancer changed what “clean” meant.",
+            "story": "<p>Hide didn’t start as a business — it started at home. When my wife was diagnosed with breast cancer, we questioned everything — what we put in our bodies and what we put on our skin.</p>"
+          }
+        },
+        {
+          "type": "chapter",
+          "settings": {
+            "title": "Fixing a Broken Market",
+            "caption": "Most “simple” skincare is overpriced and overcomplicated.",
+            "story": "<p>We went looking for truly clean skincare and found the opposite — poor ingredients, hidden additives, and luxury pricing that made “simple” feel exclusive instead of honest.</p>"
+          }
+        },
+        {
+          "type": "chapter",
+          "settings": {
+            "title": "Radical Simplicity",
+            "caption": "Pure grass-fed tallow. That’s enough.",
+            "story": "<p>We started small — hand-whipped batches sold at local farmer’s markets. We listened, learned, and refined the formula with real feedback. Now we bring that same honest simplicity to everyone.</p>"
+          }
+        },
+        {
+          "type": "chapter",
+          "settings": {
+            "title": "Arizona Made",
+            "caption": "Born in the desert. Built for real life.",
+            "story": "<p>Hide was born in Arizona — where sun, heat, and desert air test your skin every day. Our early batches were sold face-to-face at local farmer’s markets, where real feedback shaped every refinement. But this isn’t skincare just for the desert — it’s for anyone who’s tired of products that don’t work, don’t last, or don’t feel real.</p>",
+            "media_layout": "scroll",
+            "media_snap": true
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

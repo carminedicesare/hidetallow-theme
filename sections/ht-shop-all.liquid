@@ -1,0 +1,268 @@
+{% comment %}
+  HT Shop All Grid - DUAL IMAGE BANNER & GRADIENT OPTIMIZED
+  - Banner: Uses <picture> for distinct Mobile/Desktop assets
+  - Desktop Fix: Uses height:auto and object-fit:fill to prevent cropping the marble floor
+  - Mobile: Uses object-position:bottom to keep marble flush
+{% endcomment %}
+
+<div class="ht-shop-container">
+  
+  {%- if section.settings.show_banner -%}
+    <div class="ht-shop-banner">
+      <div class="ht-banner-overlay"></div>
+      
+      {%- if section.settings.banner_image != blank -%}
+        <picture>
+          {%- if section.settings.banner_image_mobile != blank -%}
+            {% comment %} Mobile Image Source {% endcomment %}
+            <source media="(max-width: 767px)" srcset="{{ section.settings.banner_image_mobile | image_url: width: 1200 }}">
+          {%- endif -%}
+          
+          {% comment %} Desktop Image (Default) {% endcomment %}
+          <img 
+            src="{{ section.settings.banner_image | image_url: width: 2000 }}" 
+            class="ht-banner-img desktop-optimized" 
+            alt="{{ section.settings.banner_title | escape }}" 
+            loading="lazy"
+          >
+        </picture>
+      {%- endif -%}
+
+      <div class="ht-banner-content">
+        <h1 class="ht-banner-title">{{ section.settings.banner_title }}</h1>
+        {%- if section.settings.banner_sub != blank -%}
+          <p class="ht-banner-sub">{{ section.settings.banner_sub }}</p>
+        {%- endif -%}
+      </div>
+    </div>
+  {%- endif -%}
+
+  <div class="ht-shop-grid-wrapper">
+    
+    {%- if section.settings.section_heading != blank -%}
+      <h2 class="ht-section-heading">{{ section.settings.section_heading }}</h2>
+    {%- endif -%}
+
+    {%- if section.settings.section_subheading != blank -%}
+      <p class="ht-section-subheading">{{ section.settings.section_subheading }}</p>
+    {%- endif -%}
+
+    <div class="ht-products-list">
+      {%- for block in section.blocks -%}
+        {%- assign product = block.settings.product -%}
+        
+        <div class="ht-product-pair-row" {{ block.shopify_attributes }}>
+          
+          {% comment %} PROMO CARD {% endcomment %}
+          <div class="ht-promo-card">
+            <div class="ht-promo-header" style="background-color: {{ block.settings.promo_color }};">
+              {{ block.settings.promo_title }}
+            </div>
+            <div class="ht-promo-body">
+              {%- if block.settings.offer_image_1 != blank or block.settings.offer_text_1 != blank -%}
+                <div class="ht-offer-row">
+                  {%- if block.settings.offer_image_1 != blank -%}
+                    <img src="{{ block.settings.offer_image_1 | image_url: width: 300 }}" alt="Bundle Offer" class="ht-offer-img">
+                  {%- endif -%}
+                  {%- if block.settings.offer_text_1 != blank -%}
+                    <div class="ht-offer-text">{{ block.settings.offer_text_1 }}</div>
+                  {%- endif -%}
+                </div>
+              {%- endif -%}
+
+              {%- if block.settings.offer_image_2 != blank or block.settings.offer_text_2 != blank -%}
+                <div class="ht-offer-row">
+                  {%- if block.settings.offer_image_2 != blank -%}
+                    <img src="{{ block.settings.offer_image_2 | image_url: width: 300 }}" alt="Bundle Offer" class="ht-offer-img">
+                  {%- endif -%}
+                  {%- if block.settings.offer_text_2 != blank -%}
+                    <div class="ht-offer-text">{{ block.settings.offer_text_2 }}</div>
+                  {%- endif -%}
+                </div>
+              {%- endif -%}
+            </div>
+          </div>
+
+          {% comment %} PRODUCT CARD {% endcomment %}
+          <div class="ht-product-wrapper">
+            <div class="ht-product-media">
+              {%- if block.settings.custom_product_image != blank -%}
+                <img src="{{ block.settings.custom_product_image | image_url: width: 800 }}" alt="{{ product.title }}" class="ht-main-img" loading="lazy">
+              {%- elsif product.featured_image != blank -%}
+                <img src="{{ product.featured_image | image_url: width: 800 }}" alt="{{ product.title }}" class="ht-main-img" loading="lazy">
+              {%- endif -%}
+            </div>
+
+            <div class="ht-product-details">
+              <div class="ht-details-top">
+                <h3 class="ht-product-title">{{ product.title | default: 'Product Title' }}</h3>
+                
+                {%- liquid
+                  assign final_desc = ""
+                  if block.settings.custom_desc != blank
+                    assign final_desc = block.settings.custom_desc
+                  else
+                     assign final_desc = product.description | strip_html | truncatewords: 22
+                  endif
+                -%}
+
+                <div class="ht-product-desc">
+                  {{ final_desc }}
+                </div>
+
+                <div class="ht-product-price">
+                  {{ product.price | money | default: '$36.95' }}
+                </div>
+              </div>
+
+              <div class="ht-btn-wrapper">
+                <a href="{{ product.url | default: '#' }}" class="ht-btn-explore">
+                  {{ block.settings.btn_text | default: 'Explore' }}
+                </a>
+              </div>
+            </div>
+          </div> 
+        </div>
+      {%- endfor -%}
+    </div>
+  </div>
+</div>
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Questrial&display=swap');
+
+  .ht-shop-container { font-family: "Questrial", sans-serif; background-color: #fcfcfc; width: 100%; }
+  .ht-shop-grid-wrapper { max-width: 1200px; margin: 0 auto; padding: 60px 20px; }
+
+  /* --- BANNER CORE LOGIC --- */
+  .ht-shop-banner { 
+    position: relative; 
+    width: 100%; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    overflow: hidden; 
+    background: #0E3A27; 
+  }
+
+  .ht-banner-img { 
+    width: 100%; 
+    display: block;
+    z-index: 0; 
+  }
+
+  /* DESKTOP SPECIFIC: Prevents cropping of the marble floor */
+  @media (min-width: 768px) {
+    .ht-shop-banner {
+      height: auto; 
+      min-height: 350px;
+    }
+    .ht-banner-img.desktop-optimized {
+      object-fit: fill; /* Ensures full width-to-height gradient visibility */
+      height: 100%;
+    }
+  }
+
+  .ht-banner-overlay { 
+    position: absolute; top:0; left:0; right:0; bottom:0; 
+    background: rgba(0,0,0,0.1); 
+    z-index: 1; 
+  }
+
+  .ht-banner-content { 
+    position: absolute; /* Kept absolute to float over the relative image */
+    z-index: 2; 
+    text-align: center; 
+    color: #fff; 
+    padding: 0 20px; 
+  }
+
+  .ht-banner-title { font-family: "Bricolage Grotesque", sans-serif; font-size: 48px; font-weight: 800; text-transform: uppercase; margin: 0; letter-spacing: 1px; }
+  .ht-banner-sub { font-family: "Questrial", sans-serif; font-size: 14px; text-transform: uppercase; letter-spacing: 2px; margin-top: 10px; }
+
+  /* Typography */
+  .ht-section-heading { font-family: "Bricolage Grotesque", sans-serif; text-align: center; font-size: 36px; font-weight: 800; color: #0E3A27; margin-bottom: 8px; text-transform: uppercase; }
+  .ht-section-subheading { font-family: "Questrial", sans-serif; text-align: center; font-size: 16px; color: #555; margin-bottom: 60px; }
+
+  .ht-products-list { display: flex; flex-direction: column; gap: 80px; }
+  .ht-product-pair-row { display: grid; grid-template-columns: 1fr 2.2fr; gap: 40px; align-items: stretch; }
+
+  /* Cards */
+  .ht-promo-card { background: #fff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.06); display: flex; flex-direction: column; border: 1px solid #f0f0f0; }
+  .ht-promo-header { font-family: "Bricolage Grotesque", sans-serif; padding: 20px; color: #fff; font-size: 22px; font-weight: 800; text-align: center; text-transform: uppercase; }
+  .ht-promo-body { padding: 30px; display: flex; flex-direction: row; justify-content: space-around; flex-grow: 1; gap: 15px; }
+  .ht-offer-row { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 12px; flex: 1; }
+  .ht-offer-img { max-width: 100%; height: auto; object-fit: contain; }
+  .ht-offer-text { font-family: "Questrial", sans-serif; font-size: 13px; font-weight: 700; color: #0E3A27; line-height: 1.4; }
+
+  .ht-product-wrapper { display: grid; grid-template-columns: 1fr 1fr; background: #fff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.06); border: 1px solid #f0f0f0; }
+  .ht-product-media { position: relative; background: #f9f9f9; min-height: 400px; }
+  .ht-main-img { width: 100%; height: 100%; object-fit: cover; position: absolute; }
+  .ht-product-details { padding: 40px; display: flex; flex-direction: column; }
+  .ht-product-title { font-family: "Bricolage Grotesque", sans-serif; font-size: 30px; font-weight: 700; color: #0E3A27; margin: 15px 0; line-height: 1.1; }
+  
+  .ht-product-desc { font-size: 15px; color: #666; line-height: 1.6; margin-bottom: 25px; }
+  .ht-product-price { font-family: "Bricolage Grotesque", sans-serif; font-size: 24px; font-weight: 800; color: #0E3A27; margin-bottom: 30px; margin-top: auto; }
+  
+  .ht-btn-explore { background: #0E3A27; color: #fff; padding: 18px; text-align: center; text-decoration: none; border-radius: 8px; font-weight: 700; text-transform: uppercase; font-size: 13px; letter-spacing: 1px; transition: background 0.3s; }
+  .ht-btn-explore:hover { background: #0a291c; }
+
+  @media (min-width: 1024px) {
+    .ht-banner-title { font-size: 64px; }
+  }
+
+  @media (max-width: 767px) {
+    .ht-shop-banner { height: 220px; }
+    .ht-banner-img { position: absolute; height: 100%; object-fit: cover; object-position: bottom; }
+    .ht-banner-title { font-size: 30px; }
+    .ht-shop-grid-wrapper { padding: 30px 15px; }
+    .ht-product-pair-row { display: flex; flex-direction: row; gap: 10px; }
+    .ht-promo-card { flex: 1; }
+    .ht-product-wrapper { flex: 1.4; display: flex; flex-direction: column; }
+    .ht-promo-header { font-size: 13px; padding: 12px 5px; }
+    .ht-promo-body { flex-direction: column; padding: 15px 10px; }
+    .ht-offer-img { max-width: 65px; }
+    .ht-offer-text { font-size: 9px; }
+    .ht-product-media { min-height: 180px; height: 180px; }
+    .ht-product-details { padding: 15px; }
+    .ht-product-title { font-size: 18px; margin: 8px 0; }
+    .ht-product-desc { font-size: 11px; margin-bottom: 12px; line-height: 1.4; }
+    .ht-product-price { font-size: 18px; margin-bottom: 15px; }
+    .ht-btn-explore { padding: 12px; font-size: 11px; }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "HT Shop All Grid",
+  "settings": [
+    { "type": "checkbox", "id": "show_banner", "label": "Show Banner", "default": true },
+    { "type": "image_picker", "id": "banner_image", "label": "Banner Image (Desktop)" },
+    { "type": "image_picker", "id": "banner_image_mobile", "label": "Banner Image (Mobile)" },
+    { "type": "text", "id": "banner_title", "label": "Banner Title", "default": "Shop All" },
+    { "type": "text", "id": "banner_sub", "label": "Banner Subtext", "default": "ANCESTRAL SKIN NUTRITION" },
+    { "type": "text", "id": "section_heading", "label": "Section Heading", "default": "THE COLLECTION" },
+    { "type": "text", "id": "section_subheading", "label": "Section Subheading", "default": "A Premium Daily Essential" }
+  ],
+  "blocks": [
+    {
+      "type": "product_pair",
+      "name": "Product Row",
+      "settings": [
+        { "type": "text", "id": "promo_title", "label": "Promo Header", "default": "Bundle & Save!" },
+        { "type": "color", "id": "promo_color", "label": "Header Color", "default": "#0E3A27" },
+        { "type": "image_picker", "id": "offer_image_1", "label": "Offer 1 Image" },
+        { "type": "textarea", "id": "offer_text_1", "label": "Offer 1 Text" },
+        { "type": "image_picker", "id": "offer_image_2", "label": "Offer 2 Image" },
+        { "type": "textarea", "id": "offer_text_2", "label": "Offer 2 Text" },
+        { "type": "product", "id": "product", "label": "Product" },
+        { "type": "image_picker", "id": "custom_product_image", "label": "Custom Image" },
+        { "type": "text", "id": "review_count", "label": "Reviews", "default": "100+ Reviews" },
+        { "type": "textarea", "id": "custom_desc", "label": "Custom Description" },
+        { "type": "text", "id": "btn_text", "label": "Button Text", "default": "Explore" }
+      ]
+    }
+  ],
+  "presets": [{ "name": "HT Shop All Grid" }]
+}
+{% endschema %}

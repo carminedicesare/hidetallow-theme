@@ -1,0 +1,312 @@
+{% comment %}
+  HT - MOBILE OPTIMIZED 2-COLUMN SWIPE + INTELLIGENT DESKTOP SLIDER
+{% endcomment %}
+
+<div class="ht-other-products-section">
+  <div class="ht-container">
+    
+    {%- if section.settings.heading != blank -%}
+      <h2 class="ht-main-title">{{ section.settings.heading }}</h2>
+    {%- endif -%}
+
+    <div class="ht-carousel-container">
+      <button class="ht-slider-arrow prev" id="prev-{{ section.id }}" aria-label="Previous">❮</button>
+      
+      <div class="ht-product-swipe-row" id="HTSwipeRow-{{ section.id }}">
+        {%- for block in section.blocks -%}
+          {%- assign product = all_products[block.settings.product] -%}
+          
+          <div class="ht-matched-card" {{ block.shopify_attributes }}>
+            <div class="ht-card-media">
+               <a href="{{ product.url | default: '#' }}">
+                {%- if block.settings.custom_image != blank -%}
+                  <img src="{{ block.settings.custom_image | image_url: width: 500 }}" alt="{{ product.title }}" loading="lazy">
+                {%- elsif product.featured_image != blank -%}
+                  <img src="{{ product.featured_image | image_url: width: 500 }}" alt="{{ product.title }}" loading="lazy">
+                {%- endif -%}
+               </a>
+            </div>
+
+            <div class="ht-card-details">
+              <h3 class="ht-card-title">{{ product.title | default: "Product Name" }}</h3>
+              
+              {%- liquid
+                assign short_desc = ""
+                if block.settings.custom_desc != blank
+                  assign short_desc = block.settings.custom_desc
+                else
+                  assign short_desc = product.description | strip_html | truncatewords: 8
+                endif
+              -%}
+              
+              <div class="ht-card-desc">{{ short_desc }}</div>
+
+              <div class="ht-bottom-meta">
+                <div class="ht-card-price">{{ product.price | money }}</div>
+                <a href="{{ product.url | default: '#' }}" class="ht-matched-btn">
+                  {{ block.settings.btn_text | default: 'Explore' }}
+                </a>
+              </div>
+            </div>
+          </div>
+        {%- endfor -%}
+      </div>
+
+      <button class="ht-slider-arrow next" id="next-{{ section.id }}" aria-label="Next">❯</button>
+
+      <div class="ht-dot-container" id="HTDotContainer-{{ section.id }}">
+        {% comment %} Dots generated dynamically via JS for accuracy {% endcomment %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .ht-other-products-section {
+    background-color: #f9f9f9;
+    padding: 40px 0;
+    overflow: hidden;
+  }
+
+  .ht-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 15px;
+  }
+
+  .ht-main-title {
+    font-family: "Bricolage Grotesque", sans-serif;
+    text-align: center;
+    font-size: 28px;
+    font-weight: 800;
+    color: #0E3A27;
+    margin-bottom: 30px;
+    text-transform: uppercase;
+  }
+
+  .ht-carousel-container { position: relative; }
+
+  .ht-product-swipe-row {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding-bottom: 10px;
+  }
+
+  .ht-product-swipe-row::-webkit-scrollbar { display: none; }
+
+  .ht-matched-card {
+    scroll-snap-align: start;
+    flex: 0 0 calc(50% - 15px); /* Peek effect preserved */
+    background: #ffffff;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    border: 1px solid #eee;
+  }
+
+  .ht-card-media { aspect-ratio: 1 / 1; overflow: hidden; }
+  .ht-card-media img { width: 100%; height: 100%; object-fit: cover; }
+
+  .ht-card-details {
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+  }
+
+  .ht-card-title {
+    font-family: "Bricolage Grotesque", sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    color: #0E3A27;
+    margin: 0 0 6px 0;
+    line-height: 1.2;
+    min-height: 36px;
+    overflow: hidden;
+  }
+
+  .ht-card-desc {
+    font-family: "Questrial", sans-serif;
+    font-size: 11px;
+    color: #666;
+    line-height: 1.4;
+    margin-bottom: 10px;
+    min-height: 32px;
+  }
+
+  .ht-bottom-meta { margin-top: auto; } /* Pushes content to bottom */
+
+  .ht-card-price {
+    font-family: "Bricolage Grotesque", sans-serif;
+    font-size: 14px;
+    font-weight: 800;
+    color: #0E3A27;
+    margin-bottom: 10px;
+  }
+
+  .ht-matched-btn {
+    font-family: "Questrial", sans-serif;
+    background: #0E3A27;
+    color: #ffffff;
+    display: block;
+    text-align: center;
+    padding: 10px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 10px;
+    letter-spacing: 0.5px;
+  }
+
+  .ht-dot-container {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 15px;
+    height: 12px;
+  }
+
+  .ht-dot {
+    width: 8px;
+    height: 8px;
+    background: #d1d1d1;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .ht-dot.is-active {
+    background: #0E3A27;
+    width: 20px;
+    border-radius: 10px;
+  }
+
+  .ht-slider-arrow {
+    display: none;
+    position: absolute;
+    top: 40%;
+    transform: translateY(-50%);
+    background: #0E3A27;
+    color: #fff;
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+    z-index: 5;
+    align-items: center;
+    justify-content: center;
+  }
+
+  @media (min-width: 768px) {
+    .ht-carousel-container { padding: 0 50px; }
+    .ht-product-swipe-row { gap: 20px; overflow-x: hidden; }
+    .ht-matched-card { flex: 0 0 calc(25% - 15px); }
+    .ht-card-title { font-size: 18px; }
+    .ht-card-desc { font-size: 13px; }
+    .ht-slider-arrow { display: flex; }
+    .ht-slider-arrow.prev { left: 0; }
+    .ht-slider-arrow.next { right: 0; }
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const container = document.getElementById('HTSwipeRow-{{ section.id }}');
+    const dotContainer = document.getElementById('HTDotContainer-{{ section.id }}');
+    const nextBtn = document.getElementById('next-{{ section.id }}');
+    const prevBtn = document.getElementById('prev-{{ section.id }}');
+    
+    if (!container) return;
+
+    function initSlider() {
+      const card = container.querySelector('.ht-matched-card');
+      if (!card) return;
+
+      const cardWidth = card.offsetWidth + parseInt(window.getComputedStyle(container).gap);
+      const visibleCards = Math.round(container.offsetWidth / cardWidth);
+      const totalCards = container.querySelectorAll('.ht-matched-card').length;
+      
+      const totalSteps = Math.max(1, totalCards - visibleCards + 1);
+      
+      dotContainer.innerHTML = '';
+      if (totalSteps > 1) {
+        for (let i = 0; i < totalSteps; i++) {
+          const dot = document.createElement('span');
+          dot.classList.add('ht-dot');
+          if (i === 0) dot.classList.add('is-active');
+          dot.addEventListener('click', () => {
+            container.scrollTo({ left: i * cardWidth, behavior: 'smooth' });
+          });
+          dotContainer.appendChild(dot);
+        }
+      }
+
+      const updateUI = () => {
+        const scrollPos = container.scrollLeft;
+        const currentIndex = Math.round(scrollPos / cardWidth);
+        const dots = dotContainer.querySelectorAll('.ht-dot');
+        dots.forEach((dot, i) => {
+          dot.classList.toggle('is-active', i === currentIndex);
+        });
+
+        if (nextBtn && prevBtn) {
+          prevBtn.style.opacity = scrollPos < 10 ? "0.3" : "1";
+          nextBtn.style.opacity = (scrollPos + container.offsetWidth) >= container.scrollWidth - 10 ? "0.3" : "1";
+        }
+      };
+
+      container.addEventListener('scroll', updateUI);
+      updateUI();
+    }
+
+    initSlider();
+    window.addEventListener('resize', initSlider);
+
+    nextBtn?.addEventListener('click', () => {
+      const card = container.querySelector('.ht-matched-card');
+      const step = card.offsetWidth + parseInt(window.getComputedStyle(container).gap);
+      container.scrollBy({ left: step, behavior: 'smooth' });
+    });
+
+    prevBtn?.addEventListener('click', () => {
+      const card = container.querySelector('.ht-matched-card');
+      const step = card.offsetWidth + parseInt(window.getComputedStyle(container).gap);
+      container.scrollBy({ left: -step, behavior: 'smooth' });
+    });
+  });
+</script>
+
+{% schema %}
+{
+  "name": "HT Swipeable Products",
+  "settings": [
+    { "type": "text", "id": "heading", "label": "Section Heading", "default": "Other Products" }
+  ],
+  "blocks": [
+    {
+      "type": "product",
+      "name": "Product",
+      "settings": [
+        { "type": "product", "id": "product", "label": "Select Product" },
+        { "type": "image_picker", "id": "custom_image", "label": "Custom Product Image" },
+        { "type": "textarea", "id": "custom_desc", "label": "Custom Description (Optional)" },
+        { "type": "text", "id": "btn_text", "label": "Button Text", "default": "Explore" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "HT Swipeable Products",
+      "blocks": [ { "type": "product" }, { "type": "product" }, { "type": "product" }, { "type": "product" } ]
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,138 @@
+<div id="HT-Hub-{{ section.id }}" class="hub-root-container">
+  
+  {% comment %} --- 1. BEFORE & AFTER SIDE --- {% endcomment %}
+  <div class="hub-side-ba">
+    <div class="hub-content-padding" style="padding-top: {{ section.settings.padding_top }}px; padding-bottom: {{ section.settings.padding_bottom }}px;">
+      <div class="hub-ba-aligner">
+        {%- if section.settings.subheading != blank -%}<span class="hub-subheading">{{ section.settings.subheading }}</span>{%- endif -%}
+        <h2 class="hub-main-heading" style="font-size: {{ section.settings.heading_size_mobile }}px;">{{ section.settings.heading }}</h2>
+
+        <div class="hub-pill-grid">
+          <div class="hub-pill-card">
+            <span class="hub-pill-label">Before {{ section.settings.brand_name }}</span>
+            <div class="hub-pill-text" style="font-size: {{ section.settings.pill_font_size }}px;">{{ section.settings.before_list }}</div>
+          </div>
+          <div class="hub-pill-card hub-pill-after">
+            <span class="hub-pill-label">After {{ section.settings.brand_name }}</span>
+            <div class="hub-pill-text" style="font-size: {{ section.settings.pill_font_size }}px;">{{ section.settings.after_list }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {% comment %} --- 2. HOW TO USE / IMAGE SIDE --- {% endcomment %}
+  <div class="hub-side-how">
+    <div class="hub-how-wrapper">
+      
+      <div class="hub-desktop-instructions">
+        <h2 class="hub-how-title">{{ section.settings.main_title }}</h2>
+        <div class="hub-steps-list">
+          {%- for block in section.blocks -%}
+            <div class="hub-step-item" {{ block.shopify_attributes }}>
+              <div class="hub-step-header">
+                <span class="hub-step-arrow">→</span>
+                <p class="hub-step-name">{{ block.settings.step_title }}</p>
+              </div>
+              <div class="hub-step-body">
+                  {%- if block.settings.line_1_text != blank -%}
+                    <div class="hub-body-row">
+                      <span class="hub-body-icon">
+                        {%- if block.settings.line_1_icon != blank -%}
+                          <img src="{{ block.settings.line_1_icon | image_url: width: 40 }}" alt="" loading="lazy">
+                        {%- else -%}
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                        {%- endif -%}
+                      </span>
+                      <p>{{ block.settings.line_1_text }}</p>
+                    </div>
+                  {%- endif -%}
+              </div>
+            </div>
+          {%- endfor -%}
+        </div>
+      </div>
+
+      {%- if section.settings.footer_image != blank -%}
+        <div class="hub-feature-image-container">
+          <img src="{{ section.settings.footer_image | image_url: width: 1200 }}" alt="How to use" loading="lazy">
+        </div>
+      {%- endif -%}
+    </div>
+  </div>
+</div>
+
+<style>
+  #HT-Hub-{{ section.id }}.hub-root-container { display: block; width: 100%; overflow: hidden; line-height: normal; }
+  #HT-Hub-{{ section.id }} .hub-side-ba { background-color: #ffffff; }
+  #HT-Hub-{{ section.id }} .hub-content-padding { text-align: center; }
+  #HT-Hub-{{ section.id }} .hub-subheading { text-transform: uppercase; letter-spacing: 0.1em; font-size: 12px; color: #888; display: block; margin-bottom: 10px; }
+  #HT-Hub-{{ section.id }} .hub-main-heading { font-weight: 700; color: #0e3a27; margin: 0 0 30px 0; line-height: 1.1; }
+  #HT-Hub-{{ section.id }} .hub-pill-grid { display: flex; flex-direction: column; gap: 15px; }
+  #HT-Hub-{{ section.id }} .hub-pill-card { background: #f9f9f9; border-radius: 50px; padding: 20px 30px; }
+  #HT-Hub-{{ section.id }} .hub-pill-after { background: #ffffff; border: 1px solid #eee; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
+  #HT-Hub-{{ section.id }} .hub-pill-label { font-size: 10px; text-transform: uppercase; font-weight: 700; color: #999; display: block; margin-bottom: 5px; }
+  #HT-Hub-{{ section.id }} .hub-pill-after .hub-pill-label { color: #0e3a27; }
+  #HT-Hub-{{ section.id }} .hub-pill-text { font-weight: 600; color: #111; }
+
+  #HT-Hub-{{ section.id }} .hub-side-how { background-color: #0E3A27; color: #ffffff; }
+  #HT-Hub-{{ section.id }} .hub-how-title { font-size: 28px; text-transform: uppercase; margin-bottom: 25px; text-align: center; color: #fff; }
+  #HT-Hub-{{ section.id }} .hub-steps-list { max-width: 450px; margin: 0 auto; padding-bottom: 30px; }
+  #HT-Hub-{{ section.id }} .hub-step-item { margin-bottom: 20px; }
+  #HT-Hub-{{ section.id }} .hub-step-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+  #HT-Hub-{{ section.id }} .hub-step-name { font-weight: 800; text-transform: uppercase; font-size: 14px; margin: 0; }
+  #HT-Hub-{{ section.id }} .hub-step-body { background: #ffffff; border-radius: 12px; padding: 15px; color: #0E3A27; }
+  #HT-Hub-{{ section.id }} .hub-body-row { display: flex; align-items: center; gap: 10px; }
+  #HT-Hub-{{ section.id }} .hub-body-row p { margin: 0; font-size: 13px; font-weight: 600; }
+  #HT-Hub-{{ section.id }} .hub-feature-image-container img { width: 100%; height: auto; display: block; }
+
+  @media screen and (min-width: 750px) {
+    #HT-Hub-{{ section.id }}.hub-root-container { display: grid; grid-template-columns: 1fr 1fr; align-items: stretch; min-height: 750px; }
+    #HT-Hub-{{ section.id }} .hub-side-ba, #HT-Hub-{{ section.id }} .hub-side-how { display: flex; align-items: center; justify-content: center; }
+    #HT-Hub-{{ section.id }} .hub-main-heading { font-size: {{ section.settings.heading_size_desktop }}px !important; }
+    #HT-Hub-{{ section.id }} .hub-pill-grid { flex-direction: row; padding: 0 20px; }
+    #HT-Hub-{{ section.id }} .hub-pill-card { flex: 1; border-radius: 20px; padding: 40px 20px; }
+    #HT-Hub-{{ section.id }} .hub-how-wrapper { padding: 60px 40px; width: 100%; max-width: 600px; }
+    #HT-Hub-{{ section.id }} .hub-feature-image-container img { border-radius: 20px; }
+  }
+
+  @media (max-width: 749px) {
+    #HT-Hub-{{ section.id }} .hub-side-how { background-color: #ffffff; }
+    #HT-Hub-{{ section.id }} .hub-desktop-instructions { display: none; }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "HT Transformation Hub",
+  "settings": [
+    { "type": "header", "content": "Content" },
+    { "type": "text", "id": "subheading", "label": "B&A Subheading", "default": "EXPERIENCE THE TRANSFORMATION" },
+    { "type": "inline_richtext", "id": "heading", "label": "B&A Heading", "default": "Proven Transformation" },
+    { "type": "text", "id": "brand_name", "label": "Brand Name", "default": "Hide Tallow" },
+    { "type": "text", "id": "before_list", "label": "Before Points" },
+    { "type": "text", "id": "after_list", "label": "After Points" },
+    { "type": "text", "id": "main_title", "label": "HTU Main Title", "default": "How To Use" },
+    { "type": "image_picker", "id": "footer_image", "label": "Replacement Photo" },
+    { "type": "header", "content": "Typography Control" },
+    { "type": "range", "id": "heading_size_desktop", "min": 30, "max": 100, "step": 2, "unit": "px", "label": "Heading Size (Desktop)", "default": 60 },
+    { "type": "range", "id": "heading_size_mobile", "min": 20, "max": 50, "step": 1, "unit": "px", "label": "Heading Size (Mobile)", "default": 32 },
+    { "type": "range", "id": "pill_font_size", "min": 12, "max": 30, "step": 1, "unit": "px", "label": "Pill Content Font Size", "default": 16 },
+    { "type": "header", "content": "Spacing" },
+    { "type": "range", "id": "padding_top", "min": 0, "max": 100, "step": 5, "unit": "px", "label": "Top Padding", "default": 60 },
+    { "type": "range", "id": "padding_bottom", "min": 0, "max": 100, "step": 5, "unit": "px", "label": "Bottom Padding", "default": 60 }
+  ],
+  "blocks": [
+    {
+      "type": "step",
+      "name": "How To Use Step",
+      "settings": [
+        { "type": "text", "id": "step_title", "label": "Step Label" },
+        { "type": "image_picker", "id": "line_1_icon", "label": "Icon" },
+        { "type": "textarea", "id": "line_1_text", "label": "Instruction Text" }
+      ]
+    }
+  ],
+  "presets": [ { "name": "HT Transformation Hub" } ]
+}
+{% endschema %}

@@ -1,0 +1,209 @@
+<section class="ht-tallow-story section-{{ section.id }}">
+  
+  <div class="ht-header-mobile">
+    <div class="ht-header-inner">
+      <span class="ht-overline">{{ section.settings.overline }}</span>
+      <h2 class="ht-title">{{ section.settings.title }}</h2>
+    </div>
+  </div>
+
+  <div class="ht-content-full">
+    <div class="ht-main-content"> 
+      
+      <div class="ht-image-wrapper">
+        {% if section.settings.main_image != blank %}
+          {{ section.settings.main_image | image_url: width: 1400 | image_tag: loading: 'lazy', class: 'ht-main-img' }}
+        {% else %}
+          <div class="ht-placeholder-img">Image Asset Placeholder</div>
+        {% endif %}
+      </div>
+
+      <div class="ht-copy-column">
+        
+        <div class="ht-header-desktop">
+          <span class="ht-overline">{{ section.settings.overline }}</span>
+          <h2 class="ht-title">{{ section.settings.title }}</h2>
+        </div>
+
+        <div class="ht-benefits-scroll" id="HtScroll-{{ section.id }}">
+          {% for block in section.blocks %}
+            <div class="ht-benefit-card">
+              <div class="ht-card-inner"> 
+                <div class="ht-card-top">
+                  <span class="ht-card-counter">{{ forloop.index }}/{{ section.blocks.size }}</span>
+                  <h3 class="ht-card-title">{{ block.settings.benefit_title }}</h3>
+                </div>
+                <p class="ht-card-text">{{ block.settings.benefit_desc }}</p>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+
+        <div class="ht-scroll-controls">
+          <div class="ht-scroll-indicators" id="HtIndicators-{{ section.id }}">
+            {% for block in section.blocks %}
+              <span class="ht-dot {% if forloop.first %}active{% endif %}" data-index="{{ forloop.index0 }}"></span>
+            {% endfor %}
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .ht-tallow-story { padding: 0; background: #fff; color: #0e3a27; width: 100%; overflow: hidden; }
+
+  /* Typography Defaults */
+  .ht-overline { font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color: #ffffff; display: block; margin-bottom: 8px; opacity: 0.8; }
+  .ht-title { font-size: 32px; margin: 0 0 20px 0; font-weight: 600; color: #ffffff; line-height: 1.2; }
+  
+  /* Mobile Header */
+  .ht-header-mobile { width: 100%; padding: 40px 20px; text-align: center; background: {{ section.settings.header_bg }}; }
+  .ht-header-desktop { display: none; } 
+
+  /* Content Layout */
+  .ht-content-full { width: 100%; }
+  .ht-main-content { display: block; } 
+
+  /* Image */
+  .ht-image-wrapper { width: 100%; line-height: 0; overflow: hidden; }
+  .ht-main-img { width: 100%; height: auto; display: block; object-fit: cover; }
+  
+  /* Card Scroll Container - MATCHED BACKGROUND */
+  .ht-benefits-scroll { 
+    display: flex; 
+    overflow-x: auto; 
+    gap: 0; 
+    width: 100%;
+    scrollbar-width: none; 
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    background-color: #fafafa; /* Matches the benefit card color */
+  }
+  .ht-benefits-scroll::-webkit-scrollbar { display: none; } 
+
+  /* Benefit Cards */
+  .ht-benefit-card { 
+    width: 100%; flex: 0 0 100%; 
+    background: #fafafa; 
+    padding: 60px 20px; 
+    box-sizing: border-box;
+    scroll-snap-align: center;
+  }
+  .ht-card-inner { max-width: 600px; margin: 0 auto; width: 100%; position: relative; }
+  .ht-card-counter { position: absolute; top: 0; right: 0; font-size: 12px; font-weight: bold; opacity: 0.6; }
+  .ht-card-title { 
+    font-size: 24px; margin: 0 0 16px 0; font-weight: 600; line-height: 1.3; color: #0e3a27;
+    position: relative; padding-bottom: 12px; display: inline-block;
+  }
+  .ht-card-title::after { content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 2px; background-color: #0e3a27; }
+  .ht-card-text { font-size: 16px; line-height: 1.6; color: #0e3a27; margin: 0; }
+
+  /* Dots */
+  .ht-scroll-indicators { display: flex; justify-content: center; gap: 8px; padding: 20px 0; background-color: #fafafa; }
+  .ht-dot { width: 8px; height: 8px; border-radius: 50%; background-color: #e0e0e0; cursor: pointer; transition: 0.3s; }
+  .ht-dot.active { background-color: #0e3a27; width: 20px; border-radius: 4px; }
+
+  /* --- DESKTOP --- */
+  @media (min-width: 991px) {
+    .ht-header-mobile { display: none; }
+    .ht-header-desktop { display: block; padding-bottom: 30px; }
+    
+    .ht-header-desktop .ht-overline { color: #0e3a27; opacity: 1; }
+    .ht-header-desktop .ht-title { color: #0e3a27; }
+
+    .ht-main-content {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      align-items: start;
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 80px 40px;
+      gap: 60px;
+    }
+
+    .ht-image-wrapper { 
+      position: sticky; 
+      top: 100px; 
+      border-radius: 24px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    }
+    
+    .ht-main-img {
+      border-radius: 24px;
+      object-fit: cover;
+      height: 700px; 
+    }
+    
+    .ht-copy-column { width: 100%; overflow: hidden; }
+
+    /* Desktop Cards - Keep Background Clean */
+    .ht-benefits-scroll { background-color: transparent; }
+    .ht-benefit-card { 
+      background: #f9f9f9; 
+      border-radius: 12px; 
+      padding: 40px;
+      min-height: 300px;
+      display: flex;
+      align-items: center;
+      margin-bottom: 0; 
+    }
+    
+    .ht-scroll-indicators { justify-content: flex-start; background-color: transparent; }
+  }
+</style>
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    const scrollContainer = document.getElementById('HtScroll-{{ section.id }}');
+    const dots = document.querySelectorAll('#HtIndicators-{{ section.id }} .ht-dot');
+
+    if (scrollContainer && dots.length > 0) {
+      scrollContainer.addEventListener('scroll', () => {
+        const scrollLeft = scrollContainer.scrollLeft;
+        const cardWidth = scrollContainer.offsetWidth;
+        const activeIndex = Math.round(scrollLeft / cardWidth);
+
+        dots.forEach((dot, index) => {
+          dot.classList.toggle('active', index === activeIndex);
+        });
+      });
+      
+      dots.forEach((dot, index) => {
+        dot.addEventListener('click', () => {
+           scrollContainer.scrollTo({
+             left: scrollContainer.offsetWidth * index,
+             behavior: 'smooth'
+           });
+        });
+      });
+    }
+  });
+</script>
+
+{% schema %}
+{
+  "name": "HT Tallow Story",
+  "settings": [
+    { "type": "text", "id": "overline", "label": "Small Subheading", "default": "MODERN ALL-IN-ONE FORMULA" },
+    { "type": "text", "id": "title", "label": "Main Header", "default": "Powered by Nature, Backed by Science" },
+    { "type": "color", "id": "header_bg", "label": "Mobile Header Background", "default": "#0e3a27" },
+    { "type": "image_picker", "id": "main_image", "label": "Main Mockup Image" }
+  ],
+  "blocks": [
+    {
+      "type": "benefit",
+      "name": "Benefit Card",
+      "limit": 4,
+      "settings": [
+        { "type": "text", "id": "benefit_title", "label": "Benefit Title", "default": "BIO-IDENTICAL" },
+        { "type": "textarea", "id": "benefit_desc", "label": "Benefit Description", "default": "Description text goes here." }
+      ]
+    }
+  ],
+  "presets": [
+    { "name": "HT Tallow Story" }
+  ]
+}
+{% endschema %}

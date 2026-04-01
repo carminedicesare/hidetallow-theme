@@ -1,0 +1,119 @@
+{%- comment -%} HT • Ingredients: The "Dynamic List" Engine {%- endcomment -%}
+{%- assign show = show | default: '' -%}
+
+<div class="ht-ingredient-widget" style="margin:28px 0;">
+  
+  {% if show == 'ingredients' or show == '' %}
+    <div style="font-weight:600; font-size:16px; margin:12px 0 8px 0;">
+      Key Ingredients:
+    </div>
+    <br>
+
+    <div class="ht-ing-container" style="display:flex; flex-wrap:wrap; gap:16px;">
+       </div>
+
+    <script>
+    (function(){
+      // --- 1. BUILD THE DATABASE ---
+      // We construct a map of every variant and its specific list of ingredients.
+      var DB = {
+        {% for v in product.variants %}
+          "{{ v.id }}": [
+            
+            // ITEM 1: BASE INGREDIENT (Variant Level -> Fallback to Product Level)
+            {
+              text: {{ v.metafields.custom.base_ingredient | default: product.metafields.custom.base_ingredient | json }},
+              img: "{{ v.metafields.custom.base_image | image_url: width: 148 | default: product.metafields.custom.base_image | image_url: width: 148 }}"
+            },
+
+            // ITEM 2: SCENT INGREDIENT (Variant Level Only)
+            {
+              text: {{ v.metafields.custom.variant_ingredient | json }},
+              img: "{{ v.metafields.custom.scent_eo_image | image_url: width: 148 }}"
+            }
+
+          ],
+        {% endfor %}
+      };
+
+      // --- 2. THE RENDERER ---
+      // This function wipes the container and rebuilds it from scratch based on the data.
+      function render(variantId) {
+        // Find the container relative to this script
+        var container = document.currentScript ? document.currentScript.parentElement.querySelector('.ht-ing-container') : document.querySelector('.ht-ing-container');
+        if (!container) return;
+
+        var dataList = DB[String(variantId)];
+        if (!dataList) return;
+
+        // Wipe current HTML
+        container.innerHTML = '';
+
+        // Loop through data and build HTML
+        dataList.forEach(function(item) {
+          // Skip if text is empty (e.g. Unscented has no 2nd ingredient)
+          if (!item.text) return;
+
+          // Create Wrapper
+          var wrap = document.createElement('div');
+          wrap.style.textAlign = 'center';
+          wrap.style.width = '74px';
+
+          // Create Image
+          if (item.img && item.img !== 'null') { // check for string 'null' from liquid
+            var imgCont = document.createElement('div');
+            imgCont.style.width = '74px';
+            imgCont.style.height = '74px';
+            imgCont.style.borderRadius = '50%';
+            imgCont.style.overflow = 'hidden';
+            imgCont.style.margin = '0 auto 6px';
+            
+            var img = document.createElement('img');
+            img.src = item.img;
+            img.style.width = '100%';
+            img.style.height = '100%';
+            img.style.objectFit = 'cover';
+            
+            imgCont.appendChild(img);
+            wrap.appendChild(imgCont);
+          }
+
+          // Create Label
+          var lbl = document.createElement('div');
+          lbl.style.fontSize = '12px';
+          lbl.style.lineHeight = '1.3';
+          lbl.textContent = item.text;
+          
+          wrap.appendChild(lbl);
+
+          // Append to Container
+          container.appendChild(wrap);
+        });
+      }
+
+      // --- 3. INITIALIZE ---
+      // Run once on load for the current variant
+      var startId = "{{ product.selected_or_first_available_variant.id }}";
+      
+      // Try to find if a specific variant is selected in the form
+      var formInput = document.querySelector('form[action*="/cart/add"] input[name="id"]');
+      if (formInput && formInput.value) startId = formInput.value;
+      
+      render(startId);
+
+
+      // --- 4. WATCHER ---
+      // Poll for changes
+      var lastId = startId;
+      setInterval(function(){
+        var currentInput = document.querySelector('form[action*="/cart/add"] input[name="id"]');
+        if (currentInput && currentInput.value && currentInput.value !== lastId) {
+           lastId = currentInput.value;
+           render(lastId);
+        }
+      }, 300);
+
+    })();
+    </script>
+  {% endif %}
+</div>

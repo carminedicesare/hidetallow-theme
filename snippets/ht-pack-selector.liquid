@@ -1,0 +1,56 @@
+{%- comment -%} HT Pack Selector — minimal render test {%- endcomment -%}
+<div class="ht-pack-selector" style="display:grid;gap:.5rem;margin:.5rem 0">
+  <div class="ht-pack-buttons" style="display:flex;gap:.5rem;flex-direction:column">
+    <button type="button" class="ht-pack-btn" data-qty="1" style="border:1px solid #ddd;border-radius:10px;padding:.6rem .9rem;background:#fff;cursor:pointer">1 Jar</button>
+    <button type="button" class="ht-pack-btn" data-qty="3" style="border:1px solid #ddd;border-radius:10px;padding:.6rem .9rem;background:#fff;cursor:pointer">3-Pack — Save 10%</button>
+    <button type="button" class="ht-pack-btn" data-qty="6" style="border:1px solid #ddd;border-radius:10px;padding:.6rem .9rem;background:#fff;cursor:pointer">6-Pack — Save 20%</button>
+  
+
+
+  </div>
+</div>
+
+<script>
+  (function () {
+    const root = document.currentScript.previousElementSibling; // the .ht-pack-selector div
+    if (!root || !root.classList.contains('ht-pack-selector')) return;
+
+    const section = root.closest('[data-section]') || document;
+    const form = section.querySelector('form[action*="/cart/add"]');
+    if (!form) return;
+
+    // Ensure there's a quantity input in the form (create hidden if Dawn hides it)
+    let qty = form.querySelector('input[name="quantity"]');
+    if (!qty) {
+      qty = document.createElement('input');
+      qty.type = 'hidden';
+      qty.name = 'quantity';
+      qty.value = '1';
+      form.appendChild(qty);
+    }
+
+    // If a visible quantity input exists elsewhere, we’ll keep it in sync too
+    function syncVisible(n) {
+      section.querySelectorAll('input[name="quantity"]').forEach(inp => {
+        inp.value = String(n);
+        inp.dispatchEvent(new Event('input', { bubbles: true }));
+        inp.dispatchEvent(new Event('change', { bubbles: true }));
+      });
+    }
+
+    function setQty(n) {
+      qty.value = String(n);          // ensures Add to Cart posts the right quantity
+      syncVisible(n);                 // updates any visible qty box if present
+      root.querySelectorAll('.ht-pack-btn').forEach(b =>
+        b.classList.toggle('is-active', parseInt(b.dataset.qty, 10) === n)
+      );
+    }
+
+    root.querySelectorAll('.ht-pack-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const n = parseInt(btn.dataset.qty, 10);
+        if (!isNaN(n) && n > 0) setQty(n);
+      });
+    });
+  })();
+</script>

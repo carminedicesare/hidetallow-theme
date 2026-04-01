@@ -1,0 +1,181 @@
+{% comment %}
+HT Scent Selector
+- Focuses solely on scent variant selection
+- Maintains clickable buttons with highlighted state (bold pink)
+- Matches existing design
+- Adds static Add to Cart button below scent picker
+{% endcomment %}
+
+<section class="ht-config">
+  <div class="ht-wrap">
+    <form id="ht-form" action="/cart/add" method="post">
+      <input type="hidden" id="ht-variant-id" name="id" value="{{ product.selected_or_first_available_variant.id }}">
+
+      {%- assign scent_option = product.options_by_name['Scent'] -%}
+
+      <!-- SCENT -->
+      <div class="ht-group">
+        <h3 class="ht-label">{{ section.settings.heading_scent }}</h3>
+        <div class="ht-scent" id="ht-scent" role="radiogroup" aria-label="Scent">
+          {%- for v in scent_option.values -%}
+            {%- assign v_down = v | downcase -%}
+            {%- capture icon_url -%}
+              {%- if v_down == 'unscented' and section.settings.icon_unscented != blank -%}{{ section.settings.icon_unscented | image_url: width: 96 }}{%- endif -%}
+              {%- if v_down == 'lavender'  and section.settings.icon_lavender  != blank -%}{{ section.settings.icon_lavender  | image_url: width: 96 }}{%- endif -%}
+              {%- if v_down == 'vanilla'   and section.settings.icon_vanilla   != blank -%}{{ section.settings.icon_vanilla   | image_url: width: 96 }}{%- endif -%}
+              {%- if v_down == 'lemongrass' and section.settings.icon_lemongrass != blank -%}{{ section.settings.icon_lemongrass | image_url: width: 96 }}{%- endif -%}
+            {%- endcapture -%}
+            <button type="button" class="ht-scent-tile" data-scent="{{ v | escape }}" aria-pressed="false">
+              {%- if icon_url != blank -%}
+                <img src="{{ icon_url }}" alt="{{ v }}" class="ht-scent-img">
+              {%- else -%}
+                {%- case v -%}
+                  {%- when 'Unscented' -%}
+                    {{- '<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="#000000" viewBox="0 0 256 256"><path d="M104,192a8,8,0,0,1-8,8H80a8,8,0,0,1,0-16H96A8,8,0,0,1,104,192Zm72-8H160a8,8,0,0,0,0,16h16a8,8,0,0,0,0-16Zm-76-48a12,12,0,1,0-12-12A12,12,0,0,0,100,136Zm56,0a12,12,0,1,0-12-12A12,12,0,0,0,156,136Zm88.39-13.88A16,16,0,0,1,232,128H200v32a40,40,0,0,1-24,72H80a40,40,0,0,1-24-72V128H24A16,16,0,0,1,8.31,109,56.13,56.13,0,0,1,63.22,64h1.64A55.83,55.83,0,0,1,48,24a8,8,0,0,1,16,0,40,40,0,0,0,40,40h48a40,40,0,0,0,40-40,8,8,0,0,1,16,0,55.83,55.83,0,0,1-16.86,40h1.64a56.13,56.13,0,0,1,54.91,45A15.82,15.82,0,0,1,244.39,122.12ZM72,152.8a40.57,40.57,0,0,1,8-.8h96a40.57,40.57,0,0,1,8,.8V104a24,24,0,0,0-24-24H96a24,24,0,0,0-24,24ZM56,112v-8a39.81,39.81,0,0,1,8-24h-.8A40.09,40.09,0,0,0,24,112Zm144,80a24,24,0,0,0-24-24H80a24,24,0,0,0,0,48h96A24,24,0,0,0,200,192Zm32-80a40.08,40.08,0,0,0-39.2-32H192a39.81,39.81,0,0,1,8,24v8Z"/></svg>' | raw }}
+                  {%- when 'Lavender' -%}
+                    {{- '<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 15 15"><path fill="none" stroke="#000000" d="M7.5 15V7m0 .5v3m0-3a4 4 0 0 0-4-4h-3v3a4 4 0 0 0 4 4h3m0-3h3a4 4 0 0 0 4-4v-3h-3a4 4 0 0 0-4 4v3Zm0 0l4-4m-4 7l-4-4"/></svg>' | raw }}
+                  {%- when 'Vanilla' -%}
+                    {{- '<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 256 256"><path fill="#000000" d="M208 89.37V88a80 80 0 0 0-160 0v1.37A24 24 0 0 0 56 136h3.36l61.69 108a8 8 0 0 0 13.9 0l61.69-108H200a24 24 0 0 0 8-46.63Zm-80 134.51L77.79 136h19.28l40.57 71Zm6.79-87.88l21.71 38l-9.64 16.88L115.5 136Zm30.92 21.88L153.21 136h25ZM200 120H56a8 8 0 0 1 0-16a8 8 0 0 0 8-8v-8a64 64 0 0 1 128 0v8a8 8 0 0 0 8 8a8 8 0 0 1 0 16Z"/></svg>' | raw }}
+                  {%- when 'Lemongrass' -%}
+                    {{- '<svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 20c5-6 8-10 12-16"/><path d="M10 20c2-3 4-6 7-10"/><path d="M14 20c1-2 2-3 3-5"/></svg>' | raw }}
+                  {%- else -%}
+                    <span class="ht-scent-fallback">{{ v | slice: 0,1 }}</span>
+                {%- endcase -%}
+              {%- endif -%}
+              <span class="ht-scent-label">{{ v }}</span>
+            </button>
+          {%- endfor -%}
+        </div>
+      </div>
+
+      <!-- CTA -->
+      <div class="ht-cta">
+        <button type="submit" class="ht-atc">Add to Cart</button>
+      </div>
+    </form>
+  </div>
+</section>
+
+<style>
+:root {
+  --ht-ink: {{ section.settings.tile_text_color | default: '#111111' }};
+  --ht-olive: {{ section.settings.tile_active_color | default: '#2f4125' }};
+  --ht-border: {{ section.settings.tile_border_color | default: '#e7e7e7' }};
+}
+
+.ht-wrap { max-width: 1000px; margin: 0 auto; padding: 18px 16px; }
+.ht-label { font-weight: 800; margin: 0 0 10px; }
+.ht-group { margin-bottom: 18px; }
+.ht-scent-tile { color: var(--ht-ink); }
+.ht-scent { display: grid; grid-template-columns: repeat(4, minmax(110px, 1fr)); gap: 10px; }
+.ht-scent-tile { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 12px; border: 1px solid var(--ht-border); border-radius: 12px; background: #fff; cursor: pointer; transition: all 0.2s ease-in-out; }
+.ht-scent-tile:hover { border-color: var(--ht-olive); transform: scale(1.02); }
+.ht-scent-tile.is-active {
+  background: #ff69b4 !important; /* Bold hot pink */
+  border: 3px solid #ff69b4 !important; /* Thick border */
+  color: #ffffff !important; /* White text */
+  box-shadow: 0 4px 16px rgba(0,0,0,0.3) !important; /* Strong shadow */
+}
+.ht-scent-label { font-size: .9rem; font-weight: 600; }
+.ht-scent-img { width: 42px; height: 42px; object-fit: contain; }
+.ht-scent-fallback { display: inline-flex; width: 42px; height: 42px; border-radius: 50%; align-items: center; justify-content: center; background: #f3f3f3; font-weight: 800; }
+
+.ht-cta { display: flex; align-items: center; gap: 12px; margin-top: 14px; }
+.ht-atc { background: #000; color: #fff; border: 0; padding: 12px 22px; border-radius: 12px; font-weight: 800; cursor: pointer; }
+
+@media (max-width: 760px) {
+  .ht-scent { grid-template-columns: repeat(2, 1fr); }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  console.log('=== Scent Selector Loading ===');
+  const product = {{ product | json }};
+  const scentBtns = document.querySelectorAll('.ht-scent-tile');
+  const variantInput = document.getElementById('ht-variant-id');
+
+  console.log('Found buttons:', scentBtns.length, 'Product:', !!product, 'Input:', !!variantInput);
+
+  if (!scentBtns.length || !variantInput) {
+    console.error('Error: Missing buttons or input');
+    return;
+  }
+
+  function norm(s) { return (s || '').trim().toLowerCase(); }
+
+  function setActive(group, el) {
+    group.forEach(b => {
+      b.classList.remove('is-active');
+      console.log('Removed is-active from:', b.dataset.scent);
+    });
+    el.classList.add('is-active');
+    console.log('Added is-active to:', el.dataset.scent);
+  }
+
+  function findVariant(scent) {
+    if (!product || !product.variants) {
+      console.error('No product or variants');
+      return null;
+    }
+    return product.variants.find(v => {
+      const o1 = (product.options && product.options[0] === 'Scent') ? v.option1 : v.option2;
+      return norm(o1) === norm(scent);
+    }) || product.variants[0];
+  }
+
+  function updateVariant(scent) {
+    const current = findVariant(scent);
+    if (current && variantInput) {
+      variantInput.value = current.id;
+      console.log('Variant updated:', current.id);
+    } else {
+      console.error('Variant not found for scent:', scent);
+    }
+  }
+
+  // Initialize
+  let selectedScent = (product?.options?.[0] === 'Scent')
+    ? (product?.selected_or_first_available_variant?.option1 || product?.options_by_name['Scent']?.values[0] || '')
+    : (product?.options_by_name['Scent']?.values[0] || '');
+  const defaultScentBtn = Array.from(scentBtns).find(b => norm(b.dataset.scent) === norm(selectedScent)) || scentBtns[0];
+  if (defaultScentBtn) {
+    setActive(scentBtns, defaultScentBtn);
+    selectedScent = defaultScentBtn.dataset.scent;
+    updateVariant(selectedScent);
+    console.log('Initialized with scent:', selectedScent);
+  }
+
+  // Click handler
+  scentBtns.forEach((b, i) => {
+    b.addEventListener('click', (e) => {
+      e.preventDefault();
+      console.log('Clicked scent:', b.dataset.scent, 'Index:', i);
+      selectedScent = b.dataset.scent;
+      setActive(scentBtns, b);
+      updateVariant(selectedScent);
+    });
+  });
+
+  console.log('=== Scent Selector Ready ===');
+});
+</script>
+
+{% schema %}
+{
+  "name": "HT Scent Selector",
+  "tag": "section",
+  "class": "ht-configurator",
+  "settings": [
+    { "type": "text", "id": "heading_scent", "label": "Scent heading", "default": "Scent" },
+    { "type": "image_picker", "id": "icon_unscented", "label": "Icon — Unscented" },
+    { "type": "image_picker", "id": "icon_lavender",  "label": "Icon — Lavender" },
+    { "type": "image_picker", "id": "icon_vanilla",   "label": "Icon — Vanilla" },
+    { "type": "image_picker", "id": "icon_lemongrass","label": "Icon — Lemongrass" },
+    { "type": "color", "id": "tile_text_color",   "label": "Tile text color",   "default": "#111111" },
+    { "type": "color", "id": "tile_active_color", "label": "Tile active color", "default": "#2f4125" },
+    { "type": "color", "id": "tile_border_color", "label": "Tile border color", "default": "#e7e7e7" }
+  ],
+  "presets": [{ "name": "HT Scent Selector" }]
+}
+{% endschema %}

@@ -1,0 +1,221 @@
+{%- style -%}
+  @import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&family=Questrial&display=swap');
+
+  .benefits-section-{{ section.id }} {
+    background-color: {{ section.settings.bg_color }};
+    padding: {{ section.settings.section_padding_top }}px 0 {{ section.settings.section_padding_bottom }}px 0;
+    font-family: 'Questrial', sans-serif;
+  }
+
+  .marble-container {
+    position: relative;
+    padding: {{ section.settings.container_padding_top }}px 0 {{ section.settings.container_padding_bottom }}px 0;
+    background-image: url('{{ section.settings.marble_image | image_url: width: 2000 }}');
+    background-size: cover;
+    background-position: center;
+    overflow: hidden;
+    /* Flexbox ensures items stack and don't float over each other */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .marble-container::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0, {{ section.settings.overlay_opacity }});
+    z-index: 1;
+  }
+
+  .benefits-section__title {
+    position: relative;
+    z-index: 2;
+    font-family: 'Bricolage Grotesque', sans-serif;
+    color: {{ section.settings.text_color }};
+    text-align: center;
+    font-size: clamp(2.5rem, 6vw, 4rem);
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -0.04em;
+    padding: 0 20px;
+    margin: 0;
+    transform: translateY({{ section.settings.header_nudge }}px);
+    margin-bottom: {{ section.settings.header_gap }}px;
+  }
+
+  .benefits-marquee-wrapper {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    gap: {{ section.settings.row_gap }}px;
+    width: 100%;
+    mask-image: linear-gradient(to right, transparent, black 15%, black 85%, transparent);
+    -webkit-mask-image: linear-gradient(to right, transparent, black 15%, black 85%, transparent);
+    margin-bottom: {{ section.settings.button_top_gap }}px; /* Space between pills and button */
+  }
+
+  .benefits-marquee {
+    display: flex;
+    gap: {{ section.settings.row_gap }}px;
+    width: max-content;
+  }
+
+  .animate-slow { animation: scroll {{ section.settings.scroll_speed | plus: 15 }}s linear infinite; }
+  .animate-fast { animation: scroll {{ section.settings.scroll_speed }}s linear infinite reverse; }
+  .animate-mid { animation: scroll {{ section.settings.scroll_speed | plus: 7 }}s linear infinite; }
+
+  @keyframes scroll {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+
+  .benefit-pill {
+    background-color: {{ section.settings.tag_bg_color }};
+    color: {{ section.settings.tag_text_color }};
+    padding: 0 25px;
+    border-radius: 100px;
+    font-size: 1rem;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    border: 1px solid rgba(255,255,255,0.1);
+    white-space: nowrap;
+  }
+
+  .marble-cta-wrapper {
+    position: relative; /* Changed from absolute to keep it in the stack */
+    z-index: 2;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }
+
+  .benefits-cta {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 80%;
+    max-width: 450px;
+    height: 55px;
+    background-color: {{ section.settings.cta_bg_color }};
+    color: {{ section.settings.cta_text_color }};
+    text-decoration: none;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    border-radius: 50px;
+    transition: transform 0.2s ease;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+  }
+
+  .benefits-cta:hover { transform: scale(1.02); }
+{%- endstyle -%}
+
+<section class="benefits-section-{{ section.id }}">
+  <div class="marble-container">
+    <h2 class="benefits-section__title">{{ section.settings.title }}</h2>
+
+    <div class="benefits-marquee-wrapper">
+      {% for row_num in (1..3) %}
+        {% assign current_row = 'row' | append: row_num %}
+        {% assign speed = 'animate-mid' %}
+        {% if row_num == 1 %}{% assign speed = 'animate-slow' %}{% elsif row_num == 2 %}{% assign speed = 'animate-fast' %}{% endif %}
+        
+        <div class="benefits-marquee {{ speed }}">
+          {% capture row_html %}
+            {% for block in section.blocks %}
+              {% if block.settings.row == current_row %}
+                <div class="benefit-pill">{{ block.settings.text }}</div>
+              {% endif %}
+            {% endfor %}
+          {% endcapture %}
+          {{ row_html }}{{ row_html }}{{ row_html }}
+        </div>
+      {% endfor %}
+    </div>
+
+    {% if section.settings.cta_link != blank %}
+      <div class="marble-cta-wrapper">
+        <a href="{{ section.settings.cta_link }}" class="benefits-cta">
+          {{ section.settings.cta_label }}
+        </a>
+      </div>
+    {% endif %}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Marble Hide Benefits",
+  "settings": [
+    { "type": "header", "content": "Content" },
+    { "type": "text", "id": "title", "label": "Heading", "default": "Give Your Hide What It Deserves" },
+    { "type": "image_picker", "id": "marble_image", "label": "Marble Background" },
+    
+    { "type": "header", "content": "Layout & Positioning" },
+    { "type": "range", "id": "header_nudge", "min": -100, "max": 100, "step": 5, "unit": "px", "label": "Header Vert. Offset", "default": 0 },
+    { "type": "range", "id": "header_gap", "min": 0, "max": 150, "step": 5, "unit": "px", "label": "Gap below Header", "default": 40 },
+    { "type": "range", "id": "row_gap", "min": 5, "max": 50, "step": 5, "unit": "px", "label": "Gap between Rows", "default": 15 },
+    { "type": "range", "id": "button_top_gap", "min": 0, "max": 150, "step": 5, "unit": "px", "label": "Gap above Button", "default": 40 },
+    
+    { "type": "header", "content": "Section Padding" },
+    { "type": "range", "id": "container_padding_top", "min": 20, "max": 150, "step": 5, "unit": "px", "label": "Marble Inner Top", "default": 80 },
+    { "type": "range", "id": "container_padding_bottom", "min": 20, "max": 150, "step": 5, "unit": "px", "label": "Marble Inner Bottom", "default": 80 },
+
+    { "type": "header", "content": "Styling" },
+    { "type": "range", "id": "overlay_opacity", "min": 0, "max": 0.9, "step": 0.1, "label": "Overlay Darkness", "default": 0.2 },
+    { "type": "range", "id": "scroll_speed", "min": 10, "max": 60, "step": 5, "label": "Base Speed", "default": 25 },
+    { "type": "color", "id": "bg_color", "label": "Outer Background", "default": "#FDFCF9" },
+    { "type": "color", "id": "text_color", "label": "Title Color", "default": "#1A1A1A" },
+    { "type": "color", "id": "tag_bg_color", "label": "Pill Background", "default": "#FFFFFF" },
+    { "type": "color", "id": "tag_text_color", "label": "Pill Text", "default": "#1A1A1A" },
+    { "type": "text", "id": "cta_label", "label": "Button Label", "default": "Shop the Glow" },
+    { "type": "url", "id": "cta_link", "label": "Button Link" },
+    { "type": "color", "id": "cta_bg_color", "label": "Button Color", "default": "#1A1A1A" },
+    { "type": "color", "id": "cta_text_color", "label": "Button Text", "default": "#FFFFFF" }
+  ],
+  "blocks": [
+    {
+      "type": "benefit",
+      "name": "Benefit",
+      "settings": [
+        { "type": "text", "id": "text", "label": "Text" },
+        { "type": "select", "id": "row", "label": "Row", "options": [
+          {"value": "row1", "label": "Row 1"},
+          {"value": "row2", "label": "Row 2"},
+          {"value": "row3", "label": "Row 3"}
+        ], "default": "row1" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Marble Hide Benefits",
+      "blocks": [
+        { "type": "benefit", "settings": { "text": "Wake Up Glowing", "row": "row1" } },
+        { "type": "benefit", "settings": { "text": "Instant Skin Relief", "row": "row1" } },
+        { "type": "benefit", "settings": { "text": "Even Skin Tone", "row": "row1" } },
+        { "type": "benefit", "settings": { "text": "Silky Smooth Texture", "row": "row1" } },
+        { "type": "benefit", "settings": { "text": "Seed Oil Free", "row": "row1" } },
+        { "type": "benefit", "settings": { "text": "Youthful Skin Elasticity", "row": "row1" } },
+
+        { "type": "benefit", "settings": { "text": "Deep Lipid Repair", "row": "row2" } },
+        { "type": "benefit", "settings": { "text": "Calm Red Patches", "row": "row2" } },
+        { "type": "benefit", "settings": { "text": "Non-Greasy Finish", "row": "row2" } },
+        { "type": "benefit", "settings": { "text": "All-Day Hydration", "row": "row2" } },
+        { "type": "benefit", "settings": { "text": "Support Skin Barrier", "row": "row2" } },
+        { "type": "benefit", "settings": { "text": "Soften Fine Lines", "row": "row2" } },
+
+        { "type": "benefit", "settings": { "text": "Zero Synthetic Junk", "row": "row3" } },
+        { "type": "benefit", "settings": { "text": "Safe For Babies", "row": "row3" } },
+        { "type": "benefit", "settings": { "text": "Pure Ancestral Care", "row": "row3" } },
+        { "type": "benefit", "settings": { "text": "Fragrance Free", "row": "row3" } },
+        { "type": "benefit", "settings": { "text": "100% Grass-Fed", "row": "row3" } },
+        { "type": "benefit", "settings": { "text": "Nature’s Skin Nutrition", "row": "row3" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

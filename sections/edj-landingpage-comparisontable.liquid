@@ -1,0 +1,165 @@
+<style>
+  .ht-compare-section {
+    background-color: {{ section.settings.bg_color }};
+    color: {{ section.settings.text_color }};
+    padding: {{ section.settings.padding_mobile }}rem 0;
+  }
+
+  .ht-compare-container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+  }
+
+  .ht-compare-h2 {
+    text-align: center;
+    font-size: {{ section.settings.mobile_title_size }}px;
+    font-weight: 700;
+    margin-bottom: 3rem;
+    color: {{ section.settings.heading_color }};
+  }
+
+  .ht-compare-wrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin: 0 -1.5rem;
+    padding: 0 1.5rem;
+  }
+
+  .ht-compare-table {
+    width: 100%;
+    min-width: 650px; 
+    border-collapse: separate; 
+    border-spacing: 0;
+    table-layout: fixed;
+  }
+
+  .ht-compare-table th, 
+  .ht-compare-table td {
+    padding: 1.2rem 1rem;
+    text-align: center;
+    border-bottom: 1px solid rgba(0,0,0,0.08);
+    font-size: 0.95rem;
+    background-color: {{ section.settings.bg_color }}; 
+  }
+
+  /* --- THE FIX: Lowered Z-Index to respect the Header --- */
+  .ht-compare-table th:first-child,
+  .ht-compare-table td:first-child {
+    text-align: left;
+    width: 160px;
+    font-weight: 700;
+    position: sticky;
+    left: 0;
+    z-index: 2; /* Dropped from 10 to stay under the site header */
+    background-color: {{ section.settings.bg_color }}; 
+    box-shadow: 4px 0 8px -4px rgba(0,0,0,0.15); 
+  }
+
+  .ht-compare-winner {
+    background-color: {{ section.settings.winner_bg }} !important;
+    color: {{ section.settings.winner_text }} !important;
+    font-weight: 700;
+    position: relative;
+    z-index: 1; /* Sits below the sticky labels */
+  }
+
+  .ht-compare-header {
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    padding-bottom: 1.5rem !important;
+  }
+
+  @media screen and (min-width: 750px) {
+    .ht-compare-table th:first-child, .ht-compare-table td:first-child { 
+      width: 220px; 
+      box-shadow: none; 
+    }
+  }
+</style>
+
+<section class="ht-compare-section">
+  <div class="ht-compare-container">
+    
+    {% if section.settings.heading != blank %}
+      <h2 class="ht-compare-h2">{{ section.settings.heading }}</h2>
+    {% endif %}
+
+    <div class="ht-compare-wrapper">
+      <table class="ht-compare-table">
+        <thead>
+          <tr>
+            <th></th>
+            <th class="ht-compare-winner ht-compare-header">{{ section.settings.col_1_label }}</th>
+            <th class="ht-compare-header">{{ section.settings.col_2_label }}</th>
+            <th class="ht-compare-header">{{ section.settings.col_3_label }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for block in section.blocks %}
+            <tr {{ block.shopify_attributes }}>
+              <td>{{ block.settings.row_label }}</td>
+              <td class="ht-compare-winner">{{ block.settings.winner_val }}</td>
+              <td>{{ block.settings.comp_1_val }}</td>
+              <td>{{ block.settings.comp_2_val }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Comparison Table",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    { "type": "color", "id": "bg_color", "label": "Background Color", "default": "#ffffff" },
+    { "type": "color", "id": "heading_color", "label": "Heading Color", "default": "#0e3a27" },
+    { "type": "color", "id": "text_color", "label": "Table Text Color", "default": "#333333" },
+    { "type": "header", "content": "Column Headers" },
+    { "type": "text", "id": "col_1_label", "label": "Winner Column (Column 1)", "default": "Hide Tallow" },
+    { "type": "text", "id": "col_2_label", "label": "Competitor (Column 2)", "default": "Typical Lotion" },
+    { "type": "text", "id": "col_3_label", "label": "Competitor (Column 3)", "default": "Tallow Blends" },
+    { "type": "header", "content": "Winner Column Styling" },
+    { "type": "color", "id": "winner_bg", "label": "Winner Background", "default": "#0e3a27" },
+    { "type": "color", "id": "winner_text", "label": "Winner Text", "default": "#ffffff" },
+    { "type": "header", "content": "Typography & Spacing" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "We love a fair fight. This isn't one." },
+    { "type": "range", "id": "desktop_title_size", "label": "Desktop Title Size", "min": 24, "max": 60, "step": 1, "default": 42 },
+    { "type": "range", "id": "mobile_title_size", "label": "Mobile Title Size", "min": 20, "max": 48, "step": 1, "default": 30 },
+    { "type": "range", "id": "padding_desktop", "label": "Desktop Padding", "min": 2, "max": 10, "step": 1, "unit": "rem", "default": 5 },
+    { "type": "range", "id": "padding_mobile", "label": "Mobile Padding", "min": 2, "max": 6, "step": 1, "unit": "rem", "default": 4 }
+  ],
+  "blocks": [
+    {
+      "type": "row",
+      "name": "Table Row",
+      "settings": [
+        { "type": "text", "id": "row_label", "label": "Row Label" },
+        { "type": "text", "id": "winner_val", "label": "Hide Tallow Value" },
+        { "type": "text", "id": "comp_1_val", "label": "Column 2 Value" },
+        { "type": "text", "id": "comp_2_val", "label": "Column 3 Value" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Landing Page - Comparison Table",
+      "blocks": [
+        { "type": "row", "settings": { "row_label": "Ingredient Count", "winner_val": "1 Ingredient", "comp_1_val": "20+ Ingredients", "comp_2_val": "5–10 Ingredients" } },
+        { "type": "row", "settings": { "row_label": "Fragrance", "winner_val": "100% Odorless", "comp_1_val": "Synthetic / Perfumes", "comp_2_val": "Essential Oils (Irritants)" } },
+        { "type": "row", "settings": { "row_label": "Seed Oils", "winner_val": "Never (0%)", "comp_1_val": "Usually", "comp_2_val": "Often" } },
+        { "type": "row", "settings": { "row_label": "Preservatives", "winner_val": "Zero", "comp_1_val": "Parabens / Phenoxy", "comp_2_val": "Often Hidden" } },
+        { "type": "row", "settings": { "row_label": "Texture", "winner_val": "Buttery & Absorbing", "comp_1_val": "Watery or Greasy", "comp_2_val": "Often Grainy" } },
+        { "type": "row", "settings": { "row_label": "Sensitive Skin", "winner_val": "✓ Highly Recommended", "comp_1_val": "✕ High Irritation Risk", "comp_2_val": "! Potential Flare-ups" } },
+        { "type": "row", "settings": { "row_label": "Sourcing", "winner_val": "100% Grass-Fed", "comp_1_val": "Industrial / Unknown", "comp_2_val": "Mixed Quality" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

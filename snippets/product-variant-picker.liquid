@@ -1,0 +1,229 @@
+{%- unless product.has_only_default_variant -%}
+  <variant-selects
+    id="variant-selects-{{ section.id }}"
+    data-section="{{ section.id }}"
+    {{ block.shopify_attributes }}
+  >
+    {%- for option in product.options_with_values -%}
+      {%- liquid
+        assign picker_type = block.settings.picker_type
+      -%}
+
+      {%- if option.name == 'Scent' or option.name == 'Flavor' -%}
+        <fieldset class="js product-form__input" data-option-name="{{ option.name }}" style="display:none">
+          <legend class="form__label">{{ option.name }}</legend>
+          {% render 'product-variant-options',
+            product: product,
+            option: option, 
+            block: block,
+            picker_type: 'button'
+          %}
+        </fieldset>
+
+        <style>
+          #MainProduct-{{ section.id }} .ht-group {
+            margin: 12px 0 18px;
+          }
+
+          /* Exact style match for the heading */
+          #MainProduct-{{ section.id }} .ht-scent-heading {
+            font-size: 14px; 
+            font-weight: 800; 
+            margin-bottom: 25px; 
+            text-transform: uppercase; 
+            color: #fff; 
+            text-align: left; 
+            letter-spacing: 1.5px;
+            line-height: 1.2; /* Ensures good spacing if it wraps */
+          }
+
+          #MainProduct-{{ section.id }} .ht-scent {
+            display: flex;
+            flex-wrap: nowrap;
+            gap: 10px;
+            align-items: stretch;
+          }
+
+          #MainProduct-{{ section.id }} .ht-scent-tile {
+            background: {{ block.settings.ht_bg | default: '#ffffff' }};
+            border: 2px solid {{ block.settings.ht_border | default: '#d9e0d8' }};
+            border-radius: {{ block.settings.ht_radius | default: 18 }}px;
+            color: {{ block.settings.ht_text_color | default: '#1f1f1f' }};
+            padding: 10px 6px;
+            flex: 1 1 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            cursor: pointer;
+            transition: 0.12s;
+            text-align: center;
+            text-decoration: none;
+            min-width: 0;
+          }
+
+          #MainProduct-{{ section.id }} .ht-scent-tile svg,
+          #MainProduct-{{ section.id }} .ht-scent-tile img {
+            width: 34px;
+            height: 34px;
+          }
+
+          #MainProduct-{{ section.id }} .ht-scent-tile[aria-pressed="true"] {
+            background: {{ block.settings.ht_active_bg | default: '#ffffff' }};
+            border-color: {{ block.settings.ht_active_bd | default: '#1f3b2f' }};
+            box-shadow: 0 0 0 2px {{ block.settings.ht_active_bd | default: '#1f3b2f' }} inset;
+          }
+
+          #MainProduct-{{ section.id }} .ht-scent-label {
+            font-weight: 800;
+            font-size: 1.0rem;
+            line-height: 1.0;
+            color: {{ block.settings.ht_text_color | default: '#1f1f1f' }};
+          }
+
+          #MainProduct-{{ section.id }} .ht-scent-tile,
+          #MainProduct-{{ section.id }} .ht-scent-tile * {
+            color: {{ block.settings.ht_text_color | default: '#1f1f1f' }} !important;
+            text-decoration: none !important;
+          }
+
+          /* Marble Background for Active Tile */
+          .ht-scent-tile[aria-pressed="true"], 
+          .ht-tile.is-active {
+            background-image: url('https://cdn.shopify.com/s/files/1/0860/0951/2216/files/Marble_Background.png?v=1769197118') !important;
+            background-size: cover !important;
+            background-position: center !important;
+            color: #0E3A27 !important;
+          }
+        </style>
+
+        <div class="ht-group">
+          <p class="ht-scent-heading">Select {{ option.name }}:</p>
+
+          <div class="ht-scent" id="ht-scent" role="radiogroup" aria-label="{{ option.name }}">
+            {%- for v in option.values -%}
+              
+              {%- comment %} Find representative variant {% endcomment -%}
+              {%- assign rep_variant = nil -%}
+              {%- for variant in product.variants -%}
+                {%- if option.position == 1 and variant.option1 == v -%}
+                  {%- assign rep_variant = variant -%}
+                  {%- break -%}
+                {%- elsif option.position == 2 and variant.option2 == v -%}
+                  {%- assign rep_variant = variant -%}
+                  {%- break -%}
+                {%- elsif option.position == 3 and variant.option3 == v -%}
+                  {%- assign rep_variant = variant -%}
+                  {%- break -%}
+                {%- endif -%}
+              {%- endfor -%}
+
+              {%- comment %} Pull SVG {% endcomment -%}
+              {%- assign icon_svg = '' -%}
+              {%- if rep_variant and rep_variant.metafields.custom.variant_picker_icon != blank -%}
+                {%- assign icon_svg = rep_variant.metafields.custom.variant_picker_icon -%}
+              {%- endif -%}
+
+              <button
+                type="button"
+                class="ht-scent-tile"
+                data-scent="{{ v | escape }}"
+                aria-pressed="{% if option.selected_value == v %}true{% else %}false{% endif %}">
+
+                {%- if icon_svg != blank -%}
+                  <div class="ht-scent-img">
+                    {{ icon_svg | raw }}
+                  </div>
+                {%- else -%}
+                  {%- case v -%}
+                    {%- when 'Unscented' -%}
+                      {{ '<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" viewBox="0 0 256 256"><path d="M104,192a8,8,0,0,1-8,8H80a8,8,0,0,1,0-16H96A8,8,0,0,1,104,192Zm72-8H160a8,8,0,0,0,0,16h16a8,8,0,0,0,0-16Zm-76-48a12,12,0,1,0-12-12A12,12,0,0,0,100,136Zm56,0a12,12,0,1,0-12-12A12,12,0,0,0,156,136Zm88.39-13.88A16,16,0,0,1,232,128H200v32a40,40,0,0,1-24,72H80a40,40,0,0,1-24-72V128H24A16,16,0,0,1,8.31,109,56.13,56.13,0,0,1,63.22,64h1.64A55.83,55.83,0,0,1,48,24a8,8,0,0,1,16,0,40,40,0,0,0,40,40h48a40,40,0,0,0,40-40,8,8,0,0,1,16,0,55.83,55.83,0,0,1-16.86,40h1.64a56.13,56.13,0,0,1,54.91,45A15.82,15.82,0,0,1,244.39,122.12ZM72,152.8a40.57,40.57,0,0,1,8-.8h96a40.57,40.57,0,0,1,8,.8V104a24,24,0,0,0-24-24H96a24,24,0,0,0-24,24ZM56,112v-8a39.81,39.81,0,0,1,8-24h-.8A40.09,40.09,0,0,0,24,112Zm144,80a24,24,0,0,0-24-24H80a24,24,0,0,0,0,48h96A24,24,0,0,0,200,192Zm32-80a40.08,40.08,0,0,0-39.2-32H192a39.81,39.81,0,0,1,8,24v8Z"/></svg>' | raw }}
+                    {%- when 'Lavender' -%}
+                      {{ '<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 15 15"><path fill="none" stroke="currentColor" d="M7.5 15V7m0 .5v3m0-3a4 4 0 0 0-4-4h-3v3a4 4 0 0 0 4 4h3m0-3h3a4 4 0 0 0 4-4v-3h-3a4 4 0 0 0-4 4v3Zm0 0l4-4m-4 7l-4-4"/></svg>' | raw }}
+                    {%- when 'Vanilla' -%}
+                      {{ '<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 256 256"><path fill="currentColor" d="M208 89.37V88a80 80 0 0 0-160 0v1.37A24 24 0 0 0 56 136h3.36l61.69 108a8 8 0 0 0 13.9 0l61.69-108H200a24 24 0 0 0 8-46.63Zm-80 134.51L77.79 136h19.28l40.57 71Zm6.79-87.88l21.71 38l-9.64 16.88L115.5 136Zm30.92 21.88L153.21 136h25ZM200 120H56a8 8 0 0 1 0-16a8 8 0 0 0 8-8v-8a64 64 0 0 1 128 0v8a8 8 0 0 0 8 8a8 8 0 0 1 0 16Z"/></svg>' | raw }}
+                    {%- when 'Lemongrass' -%}
+                      {{ '<svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 20c5-6 8-10 12-16"/><path d="M10 20c2-3 4-6 7-10"/><path d="M14 20c1-2 2-3 3-5"/></svg>' | raw }}
+                    {%- else -%}
+                      <span class="ht-scent-label">{{ v }}</span>
+                  {%- endcase -%}
+                {%- endif -%}
+
+                <span class="ht-scent-label">{{ v }}</span>
+              </button>
+            {%- endfor -%}
+          </div>
+        </div>
+
+        <script>
+          (() => {
+            const grid = document.currentScript.previousElementSibling;
+            const fieldset = document.querySelector('fieldset[data-option-name="{{ option.name }}"]');
+            
+            if (!grid || !fieldset) return;
+
+            function clickNative(val) {
+              const input = fieldset.querySelector('input[type="radio"][value="' + val + '"]');
+              if (input) input.click();
+            }
+
+            function setActive(val) {
+              grid.querySelectorAll('.ht-scent-tile').forEach((b) => {
+                b.setAttribute('aria-pressed', b.dataset.scent === val ? 'true' : 'false');
+              });
+            }
+
+            // Initial state
+            setActive({{ option.selected_value | json }});
+
+            // Click on our custom buttons
+            grid.addEventListener('click', (e) => {
+              const btn = e.target.closest('.ht-scent-tile');
+              if (!btn) return;
+              clickNative(btn.dataset.scent);
+              setActive(btn.dataset.scent);
+            });
+
+            // If anything changes the hidden radios (safety net)
+            fieldset.addEventListener('change', () => {
+              const sel = fieldset.querySelector('input[type="radio"]:checked')?.value;
+              if (sel) setActive(sel);
+            });
+          })();
+        </script>
+
+      {%- elsif picker_type == 'button' -%}
+        <fieldset class="js product-form__input product-form__input--pill" data-option-name="{{ option.name }}">
+          <legend class="form__label">{{ option.name }}</legend>
+          {% render 'product-variant-options',
+            product: product,
+            option: option,
+            block: block,
+            picker_type: picker_type
+          %}
+        </fieldset>
+
+      {%- else -%}
+        <div class="product-form__input product-form__input--dropdown">
+          <label class="form__label" for="Option-{{ section.id }}-{{ forloop.index0 }}">{{ option.name }}</label>
+          <div class="select">
+            <select id="Option-{{ section.id }}-{{ forloop.index0 }}" class="select__select" name="options[{{ option.name | escape }}]" form="{{ product_form_id }}">
+              {% render 'product-variant-options',
+                product: product,
+                option: option,
+                block: block,
+                picker_type: picker_type
+              %}
+            </select>
+            <span class="svg-wrapper">{{- 'icon-caret.svg' | inline_asset_content -}}</span>
+          </div>
+        </div>
+      {%- endif -%}
+    {%- endfor -%}
+
+    <script type="application/json" data-selected-variant>
+      {{ product.selected_or_first_available_variant | json }}
+    </script>
+  </variant-selects>
+{%- endunless -%}
