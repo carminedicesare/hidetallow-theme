@@ -1,0 +1,299 @@
+{%- comment -%}
+  HT • Starter Kit Builder (Build Your Own)
+  - Uses three real products:
+    • The Everyday Jar
+    • On The Go Tin
+    • The Pocket Stick
+  - Adds 3 separate SKUs to the cart via JS
+{%- endcomment -%}
+
+{%- comment -%}
+  🔧 Make sure these handles match your real product handles.
+  Change inside the quotes if needed (e.g. 'everyday-jar' vs 'the-everyday-jar').
+{%- endcomment -%}
+{%- assign starter_jar    = all_products['the-everyday-jar'] -%}
+{%- assign starter_tin    = all_products['on-the-go-tin'] -%}
+{%- assign starter_stick  = all_products['the-pocket-stick'] -%}
+
+{%- if starter_jar == blank or starter_tin == blank or starter_stick == blank -%}
+  <div class="ht-starter-kit-warning">
+    Starter Kit is not fully configured. Check the product handles in
+    <code>snippets/ht-starter-kit-options.liquid</code>.
+  </div>
+{%- else -%}
+  <div
+    class="ht-starter-kit"
+    data-ht-starter-kit
+  >
+    <div class="ht-starter-kit__header">
+      <h2 class="ht-starter-kit__title">Build Your Starter Kit</h2>
+      <p class="ht-starter-kit__subtitle">
+        Choose your scents for <strong>The Everyday Jar</strong>, <strong>On The Go Tin</strong>, and <strong>The Pocket Stick</strong>.
+      </p>
+    </div>
+
+    <div class="ht-starter-kit__grid">
+      {%- comment -%} Everyday Jar {%- endcomment -%}
+      <div class="ht-starter-kit__item">
+        <div class="ht-starter-kit__label">
+          <span class="ht-starter-kit__item-title">The Everyday Jar</span>
+          <span class="ht-starter-kit__item-sub">2oz Whipped Tallow Jar</span>
+        </div>
+        {%- if starter_jar.variants.size > 0 -%}
+          <select
+            class="ht-starter-kit__select"
+            data-role="jar-select"
+          >
+            <option value="">Choose scent</option>
+            {%- for v in starter_jar.variants -%}
+              {%- assign disabled = '' -%}
+              {%- if v.available == false -%}
+                {%- assign disabled = 'disabled' -%}
+              {%- endif -%}
+              <option
+                value="{{ v.id }}"
+                {{ disabled }}
+              >
+                {{ v.title }}{% if disabled != '' %} — Sold out{% endif %}
+              </option>
+            {%- endfor -%}
+          </select>
+        {%- else -%}
+          <p>Everyday Jar not configured with variants.</p>
+        {%- endif -%}
+      </div>
+
+      {%- comment -%} On The Go Tin {%- endcomment -%}
+      <div class="ht-starter-kit__item">
+        <div class="ht-starter-kit__label">
+          <span class="ht-starter-kit__item-title">On The Go Tin</span>
+          <span class="ht-starter-kit__item-sub">Travel tin</span>
+        </div>
+        {%- if starter_tin.variants.size > 0 -%}
+          <select
+            class="ht-starter-kit__select"
+            data-role="tin-select"
+          >
+            <option value="">Choose scent</option>
+            {%- for v in starter_tin.variants -%}
+              {%- assign disabled = '' -%}
+              {%- if v.available == false -%}
+                {%- assign disabled = 'disabled' -%}
+              {%- endif -%}
+              <option
+                value="{{ v.id }}"
+                {{ disabled }}
+              >
+                {{ v.title }}{% if disabled != '' %} — Sold out{% endif %}
+              </option>
+            {%- endfor -%}
+          </select>
+        {%- else -%}
+          <p>On The Go Tin not configured with variants.</p>
+        {%- endif -%}
+      </div>
+
+      {%- comment -%} The Pocket Stick {%- endcomment -%}
+      <div class="ht-starter-kit__item">
+        <div class="ht-starter-kit__label">
+          <span class="ht-starter-kit__item-title">The Pocket Stick</span>
+          <span class="ht-starter-kit__item-sub">Lip + spot care</span>
+        </div>
+        {%- if starter_stick.variants.size > 0 -%}
+          <select
+            class="ht-starter-kit__select"
+            data-role="stick-select"
+          >
+            <option value="">Choose scent</option>
+            {%- for v in starter_stick.variants -%}
+              {%- assign disabled = '' -%}
+              {%- if v.available == false -%}
+                {%- assign disabled = 'disabled' -%}
+              {%- endif -%}
+              <option
+                value="{{ v.id }}"
+                {{ disabled }}
+              >
+                {{ v.title }}{% if disabled != '' %} — Sold out{% endif %}
+              </option>
+            {%- endfor -%}
+          </select>
+        {%- else -%}
+          <p>The Pocket Stick not configured with variants.</p>
+        {%- endif -%}
+      </div>
+    </div>
+
+    <div class="ht-starter-kit__footer">
+      <button
+        type="button"
+        class="button button--primary ht-starter-kit__button"
+        data-role="starter-kit-add"
+      >
+        Add Starter Kit
+      </button>
+      <p class="ht-starter-kit__error" data-role="starter-kit-error"></p>
+    </div>
+  </div>
+
+  <style>
+    .ht-starter-kit {
+      border-radius: 18px;
+      border: 1px solid #E5E7EB;
+      background: #FCFBF7;
+      padding: 16px 16px 18px;
+      margin: 18px 0 10px;
+    }
+    .ht-starter-kit__header {
+      margin-bottom: 10px;
+    }
+    .ht-starter-kit__title {
+      margin: 0 0 4px;
+      font-size: 1.9rem;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      color: #111827;
+      text-align: center
+    }
+    .ht-starter-kit__subtitle {
+      margin: 0;
+      font-size: 1.4rem;
+      color: #4B5563;
+      text-align: center;
+    }
+    .ht-starter-kit__grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+      margin-top: 12px;
+    }
+    @media (min-width: 750px) {
+      .ht-starter-kit__grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+    }
+    .ht-starter-kit__item {
+      text-align: center;
+    }
+    .ht-starter-kit__label {
+      margin-bottom: 4px;
+    }
+    .ht-starter-kit__item-title {
+      display: block;
+      font-weight: 600;
+      font-size: 1.4rem;
+      color: #111827;
+      text-align: center;
+    }
+    .ht-starter-kit__item-sub {
+      display: block;
+      font-size: 1.25rem;
+      color: #6B7280;
+    }
+    .ht-starter-kit__select {
+      width: 100%;
+      border-radius: 999px;
+      border: 1px solid #D1D5DB;
+      padding: 8px 12px;
+      font-size: 1.35rem;
+      background: #FFFFFF;
+    }
+    .ht-starter-kit__footer {
+      margin-top: 16px;
+      text-align: center;
+    }
+    .ht-starter-kit__button.loading {
+      opacity: 0.7;
+      pointer-events: none;
+    }
+    .ht-starter-kit__error {
+      margin: 8px 0 0;
+      font-size: 1.3rem;
+      color: #b91c1c;
+    }
+  </style>
+
+   <script>
+    (function() {
+      // Find the Starter Kit container
+      const container = document.querySelector('[data-ht-starter-kit]');
+      if (!container) return;
+
+      const jarSelect   = container.querySelector('[data-role="jar-select"]');
+      const tinSelect   = container.querySelector('[data-role="tin-select"]');
+      const stickSelect = container.querySelector('[data-role="stick-select"]');
+      const button      = container.querySelector('[data-role="starter-kit-add"]');
+      const errorEl     = container.querySelector('[data-role="starter-kit-error"]');
+
+      if (!jarSelect || !tinSelect || !stickSelect || !button) return;
+
+      button.addEventListener('click', function(e) {
+        e.preventDefault();
+        errorEl.textContent = '';
+
+        const jarId   = jarSelect.value;
+        const tinId   = tinSelect.value;
+        const stickId = stickSelect.value;
+
+        if (!jarId || !tinId || !stickId) {
+          errorEl.textContent = 'Please choose a scent for each item.';
+          return;
+        }
+
+        button.disabled = true;
+        button.classList.add('loading');
+
+        button.dataset.originalText = button.textContent;
+button.textContent = 'Adding Starter Kit...';
+
+
+        const items = [
+          {
+            id: jarId,
+            quantity: 1,
+        
+          },
+          {
+            id: tinId,
+            quantity: 1,
+            
+          },
+          {
+            id: stickId,
+            quantity: 1,
+          
+          }
+        ];
+
+        fetch('/cart/add.js', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify({ items: items })
+        })
+        .then(function(res) {
+          if (!res.ok) throw new Error('Cart error');
+          return res.json();
+        })
+        .then(function() {
+          // For now, just go straight to cart
+          window.location.href = '/cart';
+        })
+        .catch(function() {
+          errorEl.textContent = 'Sorry, something went wrong adding your Starter Kit. Please try again.';
+        })
+        .finally(function() {
+          button.disabled = false;
+button.classList.remove('loading');
+if (button.dataset.originalText) {
+  button.textContent = button.dataset.originalText;
+}
+
+        });
+      });
+    })();
+  </script>
+
+{%- endif -%}

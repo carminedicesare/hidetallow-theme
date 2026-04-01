@@ -1,0 +1,30 @@
+<div class="yotpo-custom-wrapper" style="background-color: {{ section.settings.bg_color }}; max-width: 1200px; margin: 0 auto; padding: 20px;">
+  <div class="yotpo yotpo-main-widget"
+       data-product-id="{{ product.id }}"
+       data-name="{{ product.title | escape }}"
+       data-url="{{ shop.url }}{{ product.url }}"
+       data-image-url="{{ product.featured_image | image_url: width: 800 | replace: '?', '%3F' | replace: '&','%26' }}"
+       data-description="{{ product.description | escape }}">
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Custom Yotpo Reviews",
+  "settings": [
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background Color",
+      "default": "#ffffff"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Custom Yotpo Reviews",
+      "category": "Product"
+    }
+  ],
+  "templates": ["product"]
+}
+{% endschema %}

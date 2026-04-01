@@ -1,0 +1,241 @@
+<div class="ht-moon-section-final">
+  
+  <div class="ht-final-header">
+    <p class="ht-final-subheading">{{ section.settings.sub_heading }}</p>
+    <h2 class="ht-final-heading">{{ section.settings.main_heading }}</h2>
+  </div>
+
+  <div class="ht-final-wrapper">
+    
+    {% comment %} 
+       1. ICONS (Mobile Top / Desktop Orbit)
+    {% endcomment %}
+    <div class="ht-final-orbit-container">
+      {%- for block in section.blocks -%}
+        <div class="ht-final-item" {{ block.shopify_attributes }}>
+          <div class="ht-final-content">
+            <div class="ht-final-icon-box">
+              {%- if block.settings.icon != blank -%}
+                <img class="ht-final-icon-img" src="{{ block.settings.icon | image_url: width: 100 }}" alt="" loading="lazy">
+              {%- endif -%}
+            </div>
+            <div class="ht-final-text-wrap">
+              <p class="ht-final-title">{{ block.settings.text }}</p>
+              <p class="ht-final-desc">{{ block.settings.subtext }}</p>
+            </div>
+          </div>
+        </div>
+      {%- endfor -%}
+    </div>
+
+    {% comment %} 
+       2. IMAGE (Mobile Bottom / Desktop Center)
+    {% endcomment %}
+    <div class="ht-final-image-container">
+       {%- assign dynamic_image = product.metafields.custom.dynamic_section_image -%}
+        {%- if dynamic_image != blank -%}
+          <img class="ht-final-main-img" src="{{ dynamic_image | image_url: width: 1000 }}" alt="{{ product.title }} Benefits" loading="lazy">
+        {%- elsif section.settings.fallback_image != blank -%}
+          <img class="ht-final-main-img" src="{{ section.settings.fallback_image | image_url: width: 1000 }}" alt="Default Benefits" loading="lazy">
+        {%- endif -%}
+    </div>
+
+  </div>
+</div>
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&display=swap');
+
+  .ht-moon-section-final { 
+    background-color: #ffffff; 
+    padding: 60px 20px; 
+    overflow: hidden; 
+    font-family: "Bricolage Grotesque", sans-serif;
+    position: relative;
+    z-index: 1; 
+  }
+
+  .ht-final-header { text-align: center; margin-bottom: 40px; position: relative; z-index: 2; }
+  .ht-final-subheading { text-transform: uppercase; font-size: 14px; letter-spacing: 0.15em; color: #0E3A27; opacity: 0.8; margin-bottom: 10px; }
+  .ht-final-heading { font-size: 36px; font-weight: 800; color: #0E3A27; margin: 0; line-height: 1.1; }
+
+  /* --- SHARED STYLES --- */
+  .ht-final-icon-box {
+    width: 60px !important;
+    height: 60px !important;
+    min-width: 60px !important;
+    border-radius: 50%;
+    background: #fff;
+    border: 1px solid #eee;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-image: url('https://cdn.shopify.com/s/files/1/0860/0951/2216/files/Marble_Background.png?v=1769197118');
+    background-size: 150%;
+    background-position: center;
+    margin: 0 auto;
+  }
+  
+  .ht-final-icon-img {
+    width: 30px !important; 
+    height: auto !important; 
+    max-width: 30px !important;
+    display: block !important;
+    margin: 0 !important;
+  }
+
+  .ht-final-title { font-size: 16px; font-weight: 700; color: #0E3A27; margin: 0; line-height: 1.2; }
+  .ht-final-desc { font-size: 13px; color: #666; margin: 4px 0 0 0; line-height: 1.3; }
+
+  /* --- DESKTOP LAYOUT (The Hard-Coded Arch) --- */
+  @media screen and (min-width: 900px) {
+    .ht-final-wrapper { 
+      position: relative; 
+      width: 100%; 
+      max-width: 1100px; 
+      margin: 0 auto; 
+      height: 600px; 
+    }
+
+    /* 1. IMAGE: Anchor Left-Center */
+    .ht-final-image-container {
+      position: absolute;
+      left: 40%; 
+      top: 50%;
+      transform: translate(-50%, -50%);
+      width: 450px; 
+      z-index: 5;
+    }
+    .ht-final-main-img {
+      width: 100% !important;
+      height: auto !important;
+      display: block;
+      animation: floatFinal 6s ease-in-out infinite;
+    }
+
+    /* 2. ORBIT CONTAINER */
+    .ht-final-orbit-container {
+      position: absolute;
+      left: 40%; /* Matches Image Anchor */
+      top: 50%;
+      width: 0; height: 0;
+      z-index: 10;
+    }
+
+    /* 3. ORBIT ITEMS (Brute Force Positioning) */
+    .ht-final-item {
+      position: absolute;
+      top: 0; left: 0;
+      width: 300px; 
+      display: flex;
+      align-items: center;
+      transition: transform 0.5s;
+    }
+
+    /* --- THE GEOMETRY --- */
+    /* Item 1: Top (-50 deg) */
+    .ht-final-item:nth-child(1) { transform: rotate(-50deg) translateX(340px) rotate(50deg); }
+    
+    /* Item 2: Mid-Top (-25 deg) */
+    .ht-final-item:nth-child(2) { transform: rotate(-25deg) translateX(340px) rotate(25deg); }
+    
+    /* Item 3: Center (0 deg) */
+    .ht-final-item:nth-child(3) { transform: rotate(0deg) translateX(340px) rotate(0deg); }
+    
+    /* Item 4: Mid-Bottom (25 deg) */
+    .ht-final-item:nth-child(4) { transform: rotate(25deg) translateX(340px) rotate(-25deg); }
+    
+    /* Item 5: Bottom (50 deg) */
+    .ht-final-item:nth-child(5) { transform: rotate(50deg) translateX(340px) rotate(-50deg); }
+
+
+    .ht-final-content { display: flex; align-items: center; gap: 15px; text-align: left; }
+    .ht-final-icon-box { margin: 0; }
+  }
+
+  @keyframes floatFinal {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+    100% { transform: translateY(0px); }
+  }
+
+  /* --- MOBILE LAYOUT (3:2 Grid on Top) --- */
+  @media screen and (max-width: 899px) {
+    .ht-moon-section-final { padding: 40px 10px; }
+    .ht-final-heading { font-size: 28px; }
+
+    .ht-final-wrapper {
+      display: flex;
+      flex-direction: column; 
+      gap: 30px;
+      width: 100%;
+    }
+
+    /* ICONS ON TOP */
+    .ht-final-orbit-container {
+      width: 100%;
+      display: flex;
+      flex-wrap: wrap; 
+      justify-content: center;
+      gap: 20px 0; 
+      position: static; 
+      height: auto;
+    }
+
+    /* GRID ITEMS */
+    .ht-final-item {
+      position: static !important; 
+      transform: none !important; /* Kill Arch */
+      flex-basis: 33.33% !important; 
+      width: 33.33% !important;
+      max-width: 33.33% !important;
+      display: flex;
+      flex-direction: column; 
+      align-items: center;
+      text-align: center;
+      padding: 0 5px;
+    }
+    
+    .ht-final-content { flex-direction: column; gap: 8px; }
+    .ht-final-desc { display: none; }
+
+    /* IMAGE ON BOTTOM */
+    .ht-final-image-container {
+      width: 100%;
+      max-width: 320px;
+      margin: 0 auto;
+      position: static;
+      transform: none;
+    }
+    
+    .ht-final-main-img {
+      width: 100% !important;
+      animation: none;
+    }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "HT Moon Benefits",
+  "settings": [
+    { "type": "text", "id": "sub_heading", "label": "Sub Heading", "default": "UNLOCK YOUR SKIN'S FULL POTENTIAL" },
+    { "type": "text", "id": "main_heading", "label": "Main Heading", "default": "Powerful Daily Benefits" },
+    { "type": "image_picker", "id": "fallback_image", "label": "Center Product Image" }
+  ],
+  "blocks": [
+    {
+      "type": "benefit",
+      "name": "Benefit",
+      "limit": 5,
+      "settings": [
+        { "type": "image_picker", "id": "icon", "label": "Icon" },
+        { "type": "text", "id": "text", "label": "Benefit Title" },
+        { "type": "text", "id": "subtext", "label": "Benefit Subtext (Optional)" }
+      ]
+    }
+  ],
+  "presets": [ { "name": "HT Moon Benefits" } ]
+}
+{% endschema %}

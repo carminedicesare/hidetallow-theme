@@ -1,0 +1,327 @@
+<style>
+  /* --- Scoped Hero Styles --- */
+.ht-split-hero-{{ section.id }} {
+display: flex;
+flex-direction: column;
+width: 100%;
+--btn-font-mobile: {{ section.settings.mobile_btn_font_size }}px;
+--btn-padding-mobile: {{ section.settings.mobile_btn_padding }}px;
+--btn-font-desktop: {{ section.settings.desktop_btn_font_size }}px;
+--btn-padding-desktop: {{ section.settings.desktop_btn_padding }}px;
+--btn-width: {{ section.settings.btn_width }}px;
+  }
+.ht-split-hero-{{ section.id }} .ht-split-image-col {
+display: none;
+  }
+.ht-split-hero-{{ section.id }} .ht-split-text-col {
+width: 100%;
+display: flex;
+flex-direction: column;
+align-items: center;
+justify-content: center;
+padding: 3rem 1.2rem;
+text-align: center;
+background-color: {{ section.settings.bg_color }};
+color: {{ section.settings.text_color }};
+{% if section.settings.bg_texture != blank %}
+background-image: url('{{ section.settings.bg_texture | image_url: width: 1200 }}');
+background-size: cover;
+background-position: center;
+{% endif %}
+  }
+.ht-split-hero-{{ section.id }} .ht-split-text-inner {
+max-width: 600px;
+width: 100%;
+display: flex;
+flex-direction: column;
+align-items: center;
+  }
+.ht-split-hero-{{ section.id }} .ht-split-h1 {
+font-size: {{ section.settings.mobile_title_size }}px;
+line-height: 1.1;
+margin-bottom: 0.5rem;
+font-weight: 700;
+color: inherit;
+  }
+.ht-split-hero-{{ section.id }} .ht-split-sub {
+font-size: 1.1rem;
+margin-bottom: 1rem;
+line-height: 1.4;
+color: inherit;
+opacity: 0.9;
+  }
+.ht-split-hero-{{ section.id }} .ht-split-bullets {
+display: flex;
+flex-wrap: wrap;
+justify-content: center;
+align-items: center;
+gap: 8px;
+margin-bottom: 1.5rem;
+  }
+.ht-split-hero-{{ section.id }} .ht-split-bullet {
+background-color: {{ section.settings.pill_bg_color }};
+color: {{ section.settings.pill_text_color }};
+border: 1px solid {{ section.settings.pill_border_color }};
+border-radius: 30px;
+padding: 6px 12px;
+font-size: {{ section.settings.mobile_pill_size }}px;
+text-transform: uppercase;
+letter-spacing: 0.05em;
+font-weight: 600;
+  }
+.ht-split-hero-{{ section.id }} .ht-split-product-png {
+max-width: {{ section.settings.product_img_width }}px;
+width: 100%;
+height: auto;
+margin-top: {{ section.settings.jar_mt }}px;
+margin-bottom: {{ section.settings.jar_mb }}px;
+display: block;
+object-fit: contain;
+  }
+.ht-split-hero-{{ section.id }} .ht-split-btn {
+display: inline-flex;
+align-items: center;
+justify-content: center;
+background-color: {{ section.settings.btn_bg_color }};
+color: {{ section.settings.btn_text_color }};
+padding: var(--btn-padding-mobile) 20px;
+width: 100%;
+max-width: var(--btn-width);
+border-radius: 8px;
+text-transform: uppercase;
+letter-spacing: 0.1rem;
+font-weight: 700;
+font-size: var(--btn-font-mobile);
+text-decoration: none;
+transition: all 0.3s ease;
+cursor: pointer;
+border: none;
+  }
+.ht-split-hero-{{ section.id }} .ht-split-btn:hover {
+opacity: 0.9;
+transform: scale(1.02);
+  }
+.ht-split-hero-{{ section.id }} .ht-split-risk {
+margin-top: 15px;
+font-size: {{ section.settings.mobile_risk_size }}px;
+color: {{ section.settings.risk_text_color }};
+opacity: 0.8;
+  }
+@media screen and (min-width: 750px) {
+.ht-split-hero-{{ section.id }} {
+flex-direction: row;
+align-items: stretch;
+min-height: {{ section.settings.desktop_height }}px;
+    }
+.ht-split-hero-{{ section.id }} .ht-split-image-col {
+display: block;
+width: 50%;
+position: relative;
+    }
+.ht-split-hero-{{ section.id }} .ht-split-img-desktop {
+position: absolute;
+top: 0; left: 0;
+width: 100%;
+height: 100%;
+object-fit: cover;
+object-position: center;
+    }
+.ht-split-hero-{{ section.id }} .ht-split-text-col {
+width: 50%;
+padding: 4rem 2rem;
+    }
+.ht-split-hero-{{ section.id }} .ht-split-h1 {
+font-size: {{ section.settings.desktop_title_size }}px;
+    }
+.ht-split-hero-{{ section.id }} .ht-split-bullet {
+padding: 8px 16px;
+font-size: {{ section.settings.desktop_pill_size }}px;
+    }
+.ht-split-hero-{{ section.id }} .ht-split-btn {
+font-size: var(--btn-font-desktop);
+padding: var(--btn-padding-desktop) 20px;
+    }
+.ht-split-hero-{{ section.id }} .ht-split-risk {
+font-size: {{ section.settings.desktop_risk_size }}px;
+    }
+  }
+</style>
+
+<section class="ht-split-hero-{{ section.id }}">
+  <div class="ht-split-image-col">
+    {%- if section.settings.image_desktop != blank -%}
+      <img src="{{ section.settings.image_desktop | image_url: width: 1500 }}"
+        class="ht-split-img-desktop"
+        alt="{{ section.settings.image_desktop.alt | escape }}"
+        loading="eager">
+    {%- endif -%}
+  </div>
+  <div class="ht-split-text-col">
+    <div class="ht-split-text-inner">
+      {%- if section.settings.heading != blank -%}
+        <h1 class="ht-split-h1">{{ section.settings.heading }}</h1>
+      {%- endif -%}
+      {%- if section.settings.subheading != blank -%}
+        <p class="ht-split-sub">{{ section.settings.subheading }}</p>
+      {%- endif -%}
+      <div class="ht-split-bullets">
+        {%- if section.settings.bullet_1 != blank -%}
+          <span class="ht-split-bullet">{{ section.settings.bullet_1 }}</span>
+        {%- endif -%}
+        {%- if section.settings.bullet_2 != blank -%}
+          <span class="ht-split-bullet">{{ section.settings.bullet_2 }}</span>
+        {%- endif -%}
+        {%- if section.settings.bullet_3 != blank -%}
+          <span class="ht-split-bullet">{{ section.settings.bullet_3 }}</span>
+        {%- endif -%}
+      </div>
+      {%- if section.settings.product_png != blank -%}
+        <img src="{{ section.settings.product_png | image_url: width: 800 }}"
+          class="ht-split-product-png"
+          alt="Product Jar"
+          loading="eager">
+      {%- endif -%}
+      {%- if section.settings.button_label != blank -%}
+        <button
+          type="button"
+          class="ht-split-btn"
+          id="ht-atc-btn-{{ section.id }}">
+          {{ section.settings.button_label }}
+        </button>
+      {%- endif -%}
+      {%- if section.settings.risk_reversal != blank -%}
+        <p class="ht-split-risk">{{ section.settings.risk_reversal }}</p>
+      {%- endif -%}
+    </div>
+  </div>
+</section>
+
+<script>
+fetch('/discount/EDJ10PROMO');
+document.addEventListener('DOMContentLoaded', function () {
+  var btn = document.getElementById('ht-atc-btn-{{ section.id }}');
+  if (!btn) return;
+
+  btn.addEventListener('click', function () {
+    var originalLabel = btn.innerHTML;
+    btn.innerHTML = 'Adding...';
+    btn.disabled = true;
+
+    fetch(window.Shopify.routes.root + 'cart/add.js', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify({
+        items: [{ id: 49892959781144, quantity: 1 }],
+        sections: 'cart-drawer',
+        sections_url: window.location.pathname
+      })
+    })
+    .then(function(res) { return res.json(); })
+    .then(function(data) {
+      btn.innerHTML = originalLabel;
+      btn.disabled = false;
+
+      var html = data.sections && data.sections['cart-drawer'];
+      if (html) {
+        var parser = new DOMParser();
+        var doc = parser.parseFromString(html, 'text/html');
+
+        // Update each key zone individually
+        var selectors = [
+          '#CartDrawer-CartItems',
+          '#CartDrawer-CartErrors',
+          '.cart-drawer__footer',
+          '.cart-drawer__shipping-tracker'
+        ];
+
+        selectors.forEach(function(selector) {
+          var newEl = doc.querySelector(selector);
+          var oldEl = document.querySelector(selector);
+          if (oldEl && newEl) {
+            oldEl.innerHTML = newEl.innerHTML;
+          }
+        });
+
+        // Sync is-empty class on cart-drawer-items
+        var newDrawerItems = doc.querySelector('cart-drawer-items');
+        var oldDrawerItems = document.querySelector('cart-drawer-items');
+        if (oldDrawerItems && newDrawerItems) {
+          oldDrawerItems.className = newDrawerItems.className;
+        }
+
+        // Sync is-empty class on cart-drawer
+        var newCartDrawer = doc.querySelector('cart-drawer');
+        var oldCartDrawer = document.querySelector('cart-drawer');
+        if (oldCartDrawer && newCartDrawer) {
+          oldCartDrawer.className = newCartDrawer.className;
+        }
+      }
+
+      // Open the drawer
+      var cartDrawer = document.querySelector('cart-drawer');
+      if (cartDrawer && typeof cartDrawer.open === 'function') {
+        cartDrawer.open(btn);
+      }
+    })
+    .catch(function(err) {
+      console.error('ATC error:', err);
+      btn.innerHTML = originalLabel;
+      btn.disabled = false;
+    });
+  });
+});
+</script>
+
+{% schema %}
+{
+  "name": "Split Offer Hero",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    { "type": "header", "content": "Desktop Image Column" },
+    { "type": "image_picker", "id": "image_desktop", "label": "Lifestyle Image (Left Side)" },
+    { "type": "range", "id": "desktop_height", "label": "Desktop Min Height", "min": 500, "max": 900, "step": 10, "unit": "px", "default": 650 },
+    { "type": "header", "content": "Text Column Styling" },
+    { "type": "color", "id": "bg_color", "label": "Background Color", "default": "#F8F8F8" },
+    { "type": "image_picker", "id": "bg_texture", "label": "BG Texture Overlay" },
+    { "type": "color", "id": "text_color", "label": "Text Color", "default": "#0e3a27" },
+    { "type": "image_picker", "id": "product_png", "label": "Product Image (Transparent)" },
+    { "type": "range", "id": "product_img_width", "label": "Product Jar Size", "min": 150, "max": 600, "step": 10, "unit": "px", "default": 360 },
+    { "type": "range", "id": "jar_mt", "label": "Jar Top Margin", "min": -100, "max": 100, "step": 5, "unit": "px", "default": -10 },
+    { "type": "range", "id": "jar_mb", "label": "Jar Bottom Margin", "min": -100, "max": 100, "step": 5, "unit": "px", "default": 0 },
+    { "type": "header", "content": "Button Sizing & Width" },
+    { "type": "range", "id": "btn_width", "label": "Button Max Width", "min": 200, "max": 600, "step": 10, "unit": "px", "default": 320 },
+    { "type": "range", "id": "desktop_btn_font_size", "label": "Desktop Button Font", "min": 12, "max": 40, "step": 1, "unit": "px", "default": 18 },
+    { "type": "range", "id": "desktop_btn_padding", "label": "Desktop Button Padding", "min": 5, "max": 50, "step": 1, "unit": "px", "default": 16 },
+    { "type": "range", "id": "mobile_btn_font_size", "label": "Mobile Button Font", "min": 12, "max": 30, "step": 1, "unit": "px", "default": 16 },
+    { "type": "range", "id": "mobile_btn_padding", "label": "Mobile Button Padding", "min": 5, "max": 40, "step": 1, "unit": "px", "default": 14 },
+    { "type": "color", "id": "btn_bg_color", "label": "Button BG", "default": "#0e3a27" },
+    { "type": "color", "id": "btn_text_color", "label": "Button Text", "default": "#ffffff" },
+    { "type": "header", "content": "Typography" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Your first Everyday Jar for $10" },
+    { "type": "textarea", "id": "subheading", "label": "Subheading", "default": "Sensitive-skin safe, 1 ingredient, grass-fed" },
+    { "type": "range", "id": "desktop_title_size", "label": "Desktop Title Size", "min": 24, "max": 100, "step": 1, "default": 48 },
+    { "type": "range", "id": "mobile_title_size", "label": "Mobile Title Size", "min": 18, "max": 60, "step": 1, "default": 36 },
+    { "type": "header", "content": "Pill Badges" },
+    { "type": "text", "id": "bullet_1", "label": "Pill 1", "default": "100% Grass-Fed" },
+    { "type": "text", "id": "bullet_2", "label": "Pill 2", "default": "1 Ingredient" },
+    { "type": "text", "id": "bullet_3", "label": "Pill 3", "default": "Sensitive Safe" },
+    { "type": "range", "id": "desktop_pill_size", "label": "Pill Text Desktop", "min": 8, "max": 24, "default": 13 },
+    { "type": "range", "id": "mobile_pill_size", "label": "Pill Text Mobile", "min": 8, "max": 20, "default": 11 },
+    { "type": "color", "id": "pill_bg_color", "label": "Pill BG", "default": "transparent" },
+    { "type": "color", "id": "pill_text_color", "label": "Pill Text", "default": "#0e3a27" },
+    { "type": "color", "id": "pill_border_color", "label": "Pill Border", "default": "#0e3a27" },
+    { "type": "header", "content": "Risk Reversal" },
+    { "type": "text", "id": "button_label", "label": "Button Text", "default": "Get the $10 Jar" },
+    { "type": "url", "id": "link", "label": "Button Link (unused)" },
+    { "type": "text", "id": "risk_reversal", "label": "Risk Text", "default": "Free Shipping • 30-Day Guarantee" },
+    { "type": "color", "id": "risk_text_color", "label": "Risk Text Color", "default": "#0e3a27" },
+    { "type": "range", "id": "desktop_risk_size", "label": "Risk Size Desktop", "min": 8, "max": 24, "default": 13 },
+    { "type": "range", "id": "mobile_risk_size", "label": "Risk Size Mobile", "min": 8, "max": 20, "default": 11 }
+  ],
+  "presets": [ { "name": "Landing Page - Sticky Hero" } ]
+}
+{% endschema %}

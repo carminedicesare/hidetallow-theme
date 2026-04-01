@@ -1,0 +1,74 @@
+{%- comment -%} HT • Key Benefits — natural-size chips, single row, soft on dark bg {%- endcomment -%}
+
+{%- assign mf_title = product.metafields.custom.benefits_title | default: blank -%}
+
+{%- assign raw_list_a = product.metafields.custom.key_benefits_list -%}
+{%- assign raw_list_b = product.metafields.custom.key_benefits -%}
+{%- assign list_a = raw_list_a.value | default: raw_list_a -%}
+{%- assign list_b = raw_list_b.value | default: raw_list_b -%}
+{%- assign benefits = list_a -%}
+{%- if benefits == blank or benefits.size == 0 -%}{%- assign benefits = list_b -%}{%- endif -%}
+{%- if benefits and benefits.size == 0 and list_b and list_b contains ',' -%}{%- assign benefits = list_b | split: ',' -%}{%- endif -%}
+
+{%- comment -%} Visual knobs (kept but tweaked for dark bg) {%- endcomment -%}
+{%- assign pill_bg        = block.settings.pill_bg        | default: 'rgba(255,255,255,.08)' -%}
+{%- assign pill_border    = block.settings.pill_border    | default: 'rgba(255,255,255,.18)' -%}
+{%- assign pill_text      = block.settings.pill_text      | default: '#FFFFFF' -%}
+{%- assign pill_font_size = block.settings.pill_font_size | default: 13 -%}
+{%- assign pill_weight    = block.settings.pill_weight    | default: 600 -%}
+
+<div id="ht-benefits-{{ block.id }}" class="ht-benefits" style="margin:16px 0;">
+  <style>
+    #ht-benefits-{{ block.id }} .title{font-weight:700;font-size:15px;margin-bottom:8px;color:inherit}
+
+    /* SINGLE ROW, natural width chips (no stretch) */
+    #ht-benefits-{{ block.id }} .row{
+      display:flex;
+      gap:8px;
+      align-items:center;
+      justify-content:flex-start;
+      flex-wrap:nowrap;            /* keep 3 on one line */
+    }
+
+    /* If the viewport gets ultra-tight, gently shrink text/padding */
+    @media (max-width:380px){
+      #ht-benefits-{{ block.id }} .chip{font-size:12px;padding:6px 8px}
+    }
+
+    /* Chips: soft, tag-like, not buttons */
+    #ht-benefits-{{ block.id }} .chip{
+      display:inline-block;
+      background:{{ pill_bg }};
+      color:{{ pill_text }};
+      border:1px solid {{ pill_border }};
+      border-radius:10px;          /* tags, not big pills */
+      padding:8px 10px;
+      font-size:{{ pill_font_size }}px;
+      font-weight:{{ pill_weight }};
+      line-height:1.2;
+      white-space:nowrap;          /* keep text on one line */
+      overflow:hidden;
+      text-overflow:ellipsis;
+      cursor:default;
+      box-shadow:none;
+      user-select:text;
+    }
+  </style>
+
+  <div class="title">
+    {{ mf_title | default: block.settings.title | default: '' }}
+  </div>
+
+  <div class="row">
+    {%- if benefits and benefits != blank and benefits.size > 0 -%}
+      {%- for b in benefits -%}
+        {%- assign btxt = b | strip -%}
+        {%- if btxt != blank -%}<span class="chip">{{ btxt }}</span>{%- endif -%}
+      {%- endfor -%}
+    {%- else -%}
+      <span class="chip">Deep Moisture</span>
+      <span class="chip">Barrier Support</span>
+      <span class="chip">No Seed Oils</span>
+    {%- endif -%}
+  </div>
+</div>

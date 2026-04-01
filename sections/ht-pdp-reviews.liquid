@@ -1,0 +1,351 @@
+<div class="ht-how-container">
+  <div class="ht-layout-protector">
+    
+    <div class="ht-how-header">
+      
+      {%- if section.settings.show_trust_badge -%}
+        <div class="ht-how-trust-badge">
+          <div class="ht-how-stars" style="color: {{ section.settings.star_color }};">
+            {%- for i in (1..5) -%}
+              <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
+                <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+              </svg>
+            {%- endfor -%}
+          </div>
+          
+          <span class="ht-how-review-text" style="color: {{ section.settings.review_text_color }};">
+            {%- assign ref_product = section.settings.reference_product -%}
+            
+            {%- if ref_product != blank -%}
+              {% comment %} Calculate dynamic total with boost {% endcomment %}
+              {%- assign yotpo_base_count = ref_product.metafields.yotpo.reviews_count | plus: 0 -%}
+              {%- assign missing_reviews = section.settings.review_boost | plus: 0 -%}
+              {%- assign total_dynamic_reviews = yotpo_base_count | plus: missing_reviews -%}
+              
+              {% comment %} Determine Average Score (Use Override if provided) {% endcomment %}
+              {%- if section.settings.override_avg != blank -%}
+                {%- assign final_avg = section.settings.override_avg -%}
+              {%- else -%}
+                {%- assign final_avg = ref_product.metafields.yotpo.reviews_average | default: "5.0" -%}
+              {%- endif -%}
+
+              {% comment %} Inject dynamic variables into custom text {% endcomment %}
+              {{ section.settings.review_text | replace: '[avg]', final_avg | replace: '[count]', total_dynamic_reviews }}
+              
+            {%- else -%}
+              {% comment %} Fallback replacement if no product is selected {% endcomment %}
+              {{ section.settings.review_text | replace: '[avg]', '4.7' | replace: '[count]', '46' }}
+            {%- endif -%}
+          </span>
+          
+        </div>
+      {%- endif -%}
+
+      <h2 class="ht-how-main-title">{{ section.settings.main_title }}</h2>
+      {%- if section.settings.sub_title != blank -%}
+        <p class="ht-how-sub-title">{{ section.settings.sub_title }}</p>
+      {%- endif -%}
+      
+      <div class="ht-filter-badges">
+        <button class="ht-badge active" onclick="filterReviews('all', this)">All</button>
+        <button class="ht-badge" onclick="filterReviews('dry', this)">Dry Skin</button>
+        <button class="ht-badge" onclick="filterReviews('anti-aging', this)">Anti-Aging</button>
+        <button class="ht-badge" onclick="filterReviews('eczema', this)">Eczema & Psoriasis</button>
+        <button class="ht-badge" onclick="filterReviews('acne', this)">Acne & Clear Skin</button>
+      </div>
+    </div>
+
+    <div class="ht-review-slider-engine" id="htSlider">
+      {%- for block in section.blocks -%}
+        <div class="ht-review-card-wrapper" data-category="{{ block.settings.filter_tag | handleize }}" {{ block.shopify_attributes }}>
+          <div class="ht-review-card">
+            <div class="ht-card-stars">★★★★★</div>
+            
+            {%- if block.settings.line_1_text != blank -%}
+              <h3 class="ht-review-headline">{{ block.settings.line_1_text }}</h3>
+            {%- endif -%}
+
+            {%- if block.settings.line_2_text != blank -%}
+              <p class="ht-review-body">"{{ block.settings.line_2_text }}"</p>
+            {%- endif -%}
+
+            <div class="ht-reviewer-footer">
+              <div class="ht-verified-box">
+                <span class="ht-check-icon">✓</span>
+                <span class="ht-verified-text">Verified Buyer</span>
+              </div>
+              <span class="ht-reviewer-name">{{ block.settings.step_title }}</span>
+            </div>
+          </div>
+        </div>
+      {%- endfor -%}
+    </div>
+
+    {%- assign footer_image = section.settings.footer_image -%}
+    {%- if footer_image != blank -%}
+      <div class="ht-how-footer">
+        <img src="{{ footer_image | image_url: width: 1200 }}" alt="Hide Tallow" loading="lazy">
+      </div>
+    {%- endif -%}
+    
+  </div>
+</div>
+
+<style>
+/* 1. RESET & CONTAINER */
+.ht-how-container {
+  width: 100%;
+  background-color: #0E3A27;
+  color: #ffffff;
+  font-family: inherit;
+  overflow: hidden;
+  padding: 40px 0 0;
+  box-sizing: border-box;
+  position: relative;
+  z-index: 1; 
+}
+
+.ht-layout-protector {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* 2. HEADER & FILTERS */
+.ht-how-header {
+  text-align: center;
+  margin-bottom: 30px;
+  padding: 0 10px;
+  width: 100%;
+}
+
+/* --- Trust Badge Styles --- */
+.ht-how-trust-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center; 
+  gap: 8px;
+  margin-bottom: 15px; 
+}
+.ht-how-stars {
+  display: flex;
+  gap: 2px;
+  align-items: center;
+}
+.ht-how-review-text {
+  font-size: 1.2rem; 
+  font-family: "Questrial", sans-serif;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.ht-how-main-title {
+  font-weight: 800;
+  text-transform: uppercase;
+  font-size: clamp(20px, 7.5vw, 42px); 
+  margin: 0 0 10px;
+  letter-spacing: -0.03em;
+  text-align: center;
+}
+
+.ht-how-sub-title {
+  font-size: 14px;
+  opacity: 0.85;
+  margin: 0 auto 25px;
+  max-width: 90%;
+  line-height: 1.4;
+  text-align: center;
+}
+
+/* 3. FILTER BADGES */
+.ht-filter-badges {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr); 
+  gap: 8px 6px;
+  width: 98%; 
+  max-width: 440px;
+  margin: 0 auto;
+}
+
+.ht-badge {
+  background: transparent;
+  border: 1px solid #fff;
+  color: #fff;
+  border-radius: 40px;
+  font-weight: 700;
+  cursor: pointer;
+  text-transform: uppercase;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 9px; 
+  padding: 10px 4px;
+  transition: all 0.2s ease;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.ht-badge.active {
+  background: #fff;
+  color: #0E3A27;
+}
+
+.ht-filter-badges .ht-badge:nth-child(1),
+.ht-filter-badges .ht-badge:nth-child(2),
+.ht-filter-badges .ht-badge:nth-child(3) { grid-column: span 4; }
+.ht-filter-badges .ht-badge:nth-child(4),
+.ht-filter-badges .ht-badge:nth-child(5) { grid-column: span 6; padding: 10px 8px; }
+
+/* 4. SLIDER ENGINE */
+.ht-review-slider-engine {
+  width: 100%;
+  display: flex;
+  overflow-x: auto;
+  gap: 15px;
+  padding: 0 20px 40px;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  align-items: stretch;
+  min-height: 420px; 
+}
+.ht-review-slider-engine::-webkit-scrollbar { display: none; }
+
+/* 5. CARD WRAPPER & CARD */
+.ht-review-card-wrapper {
+  flex: 0 0 310px; 
+  scroll-snap-align: center;
+  display: flex; 
+}
+
+.ht-review-card-wrapper.ht-hidden { display: none !important; }
+
+.ht-review-card {
+  background: #ffffff !important;
+  color: #000000 !important;
+  border-radius: 20px;
+  padding: 25px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  min-height: 380px; 
+  box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+  box-sizing: border-box;
+}
+
+.ht-card-stars { color: #FF6B00; margin-bottom: 12px; font-size: 16px; }
+.ht-review-headline { color: #0E3A27; font-weight: 800; font-size: 17px; margin-bottom: 8px; line-height: 1.2; }
+.ht-review-body { font-size: 14px; line-height: 1.5; color: #333; flex-grow: 1; margin-bottom: 15px; }
+
+.ht-reviewer-footer {
+  border-top: 1px solid #eee;
+  padding-top: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.ht-verified-text { font-size: 11px; font-weight: 600; color: #666; }
+.ht-reviewer-name { font-weight: 800; color: #0E3A27; font-size: 13px; }
+
+/* 6. DESKTOP ADJUSTMENTS */
+@media screen and (min-width: 768px) {
+  .ht-how-trust-badge { margin-bottom: 20px; }
+  .ht-how-review-text { font-size: 1.4rem; }
+  .ht-how-main-title { font-size: 42px; }
+  .ht-filter-badges { 
+    display: flex !important; width: 100% !important; max-width: none !important; 
+    gap: 12px; justify-content: center; margin-bottom: 40px;
+  }
+  .ht-badge { 
+    min-width: 150px; padding: 12px 25px; font-size: 12px; 
+    grid-column: auto !important; width: auto !important; 
+  }
+  .ht-review-card { min-height: 360px; }
+  .ht-review-card-wrapper { flex: 0 0 420px; }
+  .ht-review-slider-engine { justify-content: center; min-height: 480px; padding-bottom: 80px; }
+  .ht-how-footer { margin-top: -60px; pointer-events: none; width: 100%; position: relative; z-index: 1; }
+}
+</style>
+
+<script>
+function filterReviews(category, btn) {
+  const cards = document.querySelectorAll('.ht-review-card-wrapper');
+  const buttons = document.querySelectorAll('.ht-badge');
+  const slider = document.getElementById('htSlider');
+
+  buttons.forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+
+  cards.forEach(card => {
+    const cardCat = card.getAttribute('data-category');
+    if (category === 'all' || cardCat === category) {
+      card.classList.remove('ht-hidden');
+    } else {
+      card.classList.add('ht-hidden');
+    }
+  });
+  slider.scrollTo({ left: 0, behavior: 'smooth' });
+}
+</script>
+
+{% schema %}
+{
+"name": "HT Review Slider",
+"settings": [
+{ "type": "header", "content": "Trust Badge (Stars)" },
+{ "type": "checkbox", "id": "show_trust_badge", "label": "Show Trust Badge", "default": true },
+{ "type": "color", "id": "star_color", "label": "Star Color", "default": "#FF8A00" },
+{ "type": "color", "id": "review_text_color", "label": "Review Text Color", "default": "#ffffff" },
+
+{ "type": "header", "content": "Dynamic Review Settings" },
+{ 
+  "type": "product", 
+  "id": "reference_product", 
+  "label": "Dynamic Review Anchor", 
+  "info": "Select the product to pull live reviews from." 
+},
+{ 
+  "type": "number", 
+  "id": "review_boost", 
+  "label": "Missing Reviews Adjustment (+)", 
+  "default": 27, 
+  "info": "If Shopify is pulling 19 reviews, but Yotpo says 46, enter the difference (27) here. It will dynamically add this to the total count if you use [count] below." 
+},
+{ 
+  "type": "text", 
+  "id": "override_avg", 
+  "label": "Average Score Override", 
+  "default": "4.7", 
+  "info": "If Shopify is pulling the wrong average star rating, type the correct one here (e.g., 4.7)." 
+},
+{ 
+  "type": "text", 
+  "id": "review_text", 
+  "label": "Review Text Format", 
+  "default": "[avg]/5 average across thousands of orders", 
+  "info": "Type your phrase. Use [avg] to inject the dynamic star score, and [count] to inject the number of reviews." 
+},
+
+{ "type": "header", "content": "Section Content" },
+{ "type": "text", "id": "main_title", "label": "Main Title", "default": "Made For Everyone" },
+{ "type": "text", "id": "sub_title", "label": "Subheading", "default": "Real results from real people who have transformed their skin." },
+{ "type": "image_picker", "id": "footer_image", "label": "Bottom Image" }
+],
+"blocks": [
+{
+"type": "step",
+"name": "Review",
+"settings": [
+{ "type": "text", "id": "step_title", "label": "Reviewer Name", "default": "Danielle" },
+{ "type": "text", "id": "filter_tag", "label": "Filter Tag", "default": "anti-aging" },
+{ "type": "textarea", "id": "line_1_text", "label": "Review Headline" },
+{ "type": "textarea", "id": "line_2_text", "label": "Review Body" }
+]
+}
+],
+"presets": [
+{ "name": "HT Review Slider" }
+]
+}
+{% endschema %}

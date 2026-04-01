@@ -1,0 +1,51 @@
+<section id="ht-nyh-{{ section.id }}" style="position:relative;padding:56px 20px;background:{{ section.settings.bg }};text-align:center;overflow:hidden;">
+  <style>
+    #ht-nyh-{{ section.id }} .wm{
+      position:absolute;top:50%;left:50%;
+      transform:translate(-50%,-50%);
+      width:{{ section.settings.logo_width }}px;
+      max-width:80%;
+      opacity:{{ section.settings.logo_opacity }};
+      pointer-events:none;z-index:0;
+    }
+    #ht-nyh-{{ section.id }} .c{position:relative;z-index:1}
+    #ht-nyh-{{ section.id }} h2{
+      font-size:30px;font-weight:900;
+      margin:0 0 16px;color:{{ section.settings.heading_color }};
+    }
+    #ht-nyh-{{ section.id }} p{
+      font-size:16px;color:{{ section.settings.text_color }};
+      max-width:600px;margin:0 auto;line-height:1.6;
+    }
+  </style>
+
+  {% if section.settings.logo != blank %}
+    <img src="{{ section.settings.logo | image_url: width: 800 }}" alt="Watermark Logo" class="wm" loading="lazy">
+  {% endif %}
+
+  <div class="c">
+    {% if section.settings.title != blank %}<h2>{{ section.settings.title }}</h2>{% endif %}
+    {% if section.settings.subtitle != blank %}<p>{{ section.settings.subtitle }}</p>{% endif %}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Nourish Your Hide",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    { "type": "text", "id": "title", "label": "Heading", "default": "Nourish Your Hide" },
+    { "type": "textarea", "id": "subtitle", "label": "Subheading", "default": "No hype. No filler. Just real ingredients that actually work — for you, your family, and your skin." },
+    { "type": "image_picker", "id": "logo", "label": "Watermark Logo" },
+    { "type": "range", "id": "logo_width", "label": "Logo width (px)", "min": 100, "max": 800, "step": 20, "default": 300 },
+    { "type": "range", "id": "logo_opacity", "label": "Logo opacity", "min": 0, "max": 0.2, "step": 0.1, "default": 0.1 },
+    { "type": "color", "id": "bg", "label": "Background color", "default": "#fefcf9" },
+    { "type": "color", "id": "heading_color", "label": "Heading color", "default": "#1a1a1a" },
+    { "type": "color", "id": "text_color", "label": "Text color", "default": "#444444" }
+  ],
+  "presets": [
+    { "name": "Nourish Your Hide" }
+  ]
+}
+{% endschema %}

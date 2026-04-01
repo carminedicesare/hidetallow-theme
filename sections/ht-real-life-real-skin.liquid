@@ -1,0 +1,214 @@
+{% comment %}
+  Section: Real Life, Real Skin (scrollable tiles)
+  File: sections/real-life-real-skin.liquid
+{% endcomment %}
+
+<section class="real-life {{ section.settings.color_scheme }}" id="real-life-{{ section.id }}" style="background: {{ section.settings.bg }};">
+  <style>
+    /* Scoped styles */
+    #real-life-{{ section.id }}{
+      padding: 48px 20px;
+      text-align: center;
+    }
+    #real-life-{{ section.id }} .rlrs-title{
+      font-size: 28px; font-weight: 800; margin: 0 0 12px; color: {{ section.settings.heading_color }};
+    }
+    #real-life-{{ section.id }} .rlrs-sub{
+      font-size: 16px; color: {{ section.settings.text_color }}; margin: 0 0 28px;
+    }
+
+    #real-life-{{ section.id }} .rlrs-track{
+      display: flex; gap: 16px; padding-bottom: 10px;
+      overflow-x: auto; -webkit-overflow-scrolling: touch;
+      scroll-snap-type: x mandatory;
+    }
+    #real-life-{{ section.id }} .rlrs-tile{
+      flex: 0 0 {{ section.settings.tile_width }}px;
+      scroll-snap-align: start; background: {{ section.settings.tile_bg }};
+      border-radius: 16px; text-align: center; padding-bottom: 12px;
+    }
+
+    /* Fixed aspect ratio image wrapper */
+    #real-life-{{ section.id }} .rlrs-img-wrap{
+      position: relative;
+      width: 100%;
+      aspect-ratio: {{ section.settings.aspect_ratio }};
+      border-top-left-radius: 16px;
+      border-top-right-radius: 16px;
+      overflow: hidden;
+      background: #f2f2f2;
+    }
+    #real-life-{{ section.id }} .rlrs-img{
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+    }
+
+    #real-life-{{ section.id }} .rlrs-head{
+      font-weight: 700; font-size: 15px; color: {{ section.settings.heading_color }}; margin: 12px 0 6px;
+    }
+    #real-life-{{ section.id }} .rlrs-body{
+      font-size: 13px; color: {{ section.settings.text_color }}; padding: 0 10px; margin: 0;
+    }
+
+    /* Progress bar (mobile only) */
+    #real-life-{{ section.id }} .rlrs-progress-wrap{
+      margin: 10px auto 0; height: 4px; background: #eee; width: 100%; max-width: 320px; border-radius: 2px; overflow: hidden; display: none;
+    }
+    #real-life-{{ section.id }} .rlrs-progress{
+      height: 100%; width: 0%; background: {{ section.settings.progress_color }}; transition: width .2s ease;
+    }
+
+    /* Desktop: allow grid option */
+    @media (min-width: 990px){
+      #real-life-{{ section.id }} .rlrs-track{
+        {% if section.settings.desktop_layout == 'grid' %}
+          overflow: visible; flex-wrap: wrap; justify-content: center;
+        {% endif %}
+      }
+      {% if section.settings.desktop_layout == 'grid' %}
+      #real-life-{{ section.id }} .rlrs-tile{
+        flex: 0 0 calc(25% - 12px); /* 4-up grid with gap */
+      }
+      {% endif %}
+    }
+
+    /* Show progress bar on mobile when enabled */
+    @media (max-width: 989px){
+      {% if section.settings.show_progress_bar %}
+      #real-life-{{ section.id }} .rlrs-progress-wrap{ display: block; }
+      {% endif %}
+    }
+  </style>
+
+  <div class="rlrs-inner">
+    {% if section.settings.title != blank %}
+      <h2 class="rlrs-title">{{ section.settings.title }}</h2>
+    {% endif %}
+    {% if section.settings.subtitle != blank %}
+      <p class="rlrs-sub">{{ section.settings.subtitle }}</p>
+    {% endif %}
+
+    <div class="rlrs-track" id="rlrs-track-{{ section.id }}">
+      {% for block in section.blocks %}
+        {% assign heading = block.settings.heading | default: 'Tile' %}
+        <div class="rlrs-tile">
+          {% if block.settings.image != blank %}
+            <div class="rlrs-img-wrap">
+              {{ block.settings.image
+                | image_url: width: 1200
+                | image_tag: loading: 'lazy', class: 'rlrs-img', alt: heading }}
+            </div>
+          {% endif %}
+          {% if block.settings.heading != blank %}
+            <p class="rlrs-head">{{ block.settings.heading }}</p>
+          {% endif %}
+          {% if block.settings.body != blank %}
+            <p class="rlrs-body">{{ block.settings.body }}</p>
+          {% endif %}
+        </div>
+      {% endfor %}
+    </div>
+
+    {% if section.settings.show_progress_bar %}
+    <div class="rlrs-progress-wrap">
+      <div class="rlrs-progress" id="rlrs-progress-{{ section.id }}"></div>
+    </div>
+    {% endif %}
+  </div>
+
+  {% if section.settings.show_progress_bar %}
+  <script>
+    (function(){
+      var track = document.getElementById('rlrs-track-{{ section.id }}');
+      var bar   = document.getElementById('rlrs-progress-{{ section.id }}');
+      if(!track || !bar) return;
+
+      function update(){
+        var maxScroll = track.scrollWidth - track.clientWidth;
+        if (maxScroll <= 0) { bar.style.width = '100%'; return; }
+        var pct = (track.scrollLeft / maxScroll) * 100;
+        bar.style.width = pct + '%';
+      }
+      track.addEventListener('scroll', update, { passive: true });
+
+      // Initialize when section is visible
+      var once = false;
+      if ('IntersectionObserver' in window){
+        var io = new IntersectionObserver(function(entries){
+          entries.forEach(function(e){
+            if(e.isIntersecting && !once){ once = true; update(); }
+          });
+        }, { threshold: 0.1 });
+        io.observe(track);
+      } else {
+        update();
+      }
+    })();
+  </script>
+  {% endif %}
+</section>
+
+{% schema %}
+{
+  "name": "Real Life • Real Skin",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    { "type": "text", "id": "title", "label": "Title", "default": "Real Life. Real Skin." },
+    { "type": "text", "id": "subtitle", "label": "Subtitle", "default": "Built to fit into your life — wherever it takes you." },
+    {
+      "type": "select",
+      "id": "desktop_layout",
+      "label": "Desktop layout",
+      "default": "grid",
+      "options": [
+        { "value": "grid", "label": "Grid (4-up)" },
+        { "value": "scroll", "label": "Horizontal scroll" }
+      ]
+    },
+    { "type": "range", "id": "tile_width", "label": "Mobile tile width (px)", "min": 180, "max": 280, "step": 10, "default": 220 },
+    { "type": "select", "id": "aspect_ratio", "label": "Image aspect ratio", "default": "4/3",
+      "options": [
+        { "value": "4/3", "label": "4:3 (balanced)" },
+        { "value": "3/2", "label": "3:2 (photographic)" },
+        { "value": "1/1", "label": "1:1 (square)" },
+        { "value": "16/9", "label": "16:9 (wide)" }
+      ]
+    },
+    { "type": "checkbox", "id": "show_progress_bar", "label": "Show mobile progress bar", "default": true },
+    { "type": "color", "id": "bg", "label": "Background", "default": "#ffffff" },
+    { "type": "color", "id": "tile_bg", "label": "Tile background", "default": "#f9f9f9" },
+    { "type": "color", "id": "heading_color", "label": "Heading color", "default": "#1a1a1a" },
+    { "type": "color", "id": "text_color", "label": "Body text color", "default": "#555555" },
+    { "type": "color", "id": "progress_color", "label": "Progress bar color", "default": "#000000" }
+  ],
+  "blocks": [
+    {
+      "type": "tile",
+      "name": "Tile",
+      "settings": [
+        { "type": "image_picker", "id": "image", "label": "Image" },
+        { "type": "text", "id": "heading", "label": "Heading", "default": "Gentle Daily Moisturizer" },
+        { "type": "textarea", "id": "body", "label": "Body", "default": "Hydrates dry skin, smooths fine lines, and won’t clog pores." }
+      ]
+    }
+  ],
+  "max_blocks": 12,
+  "presets": [
+    {
+      "name": "Real Life • Real Skin",
+      "category": "Product",
+      "blocks": [
+        { "type": "tile" },
+        { "type": "tile" },
+        { "type": "tile" },
+        { "type": "tile" }
+      ]
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,93 @@
+<section class="why-tallow section-{{ section.id }}" style="--ht-bg:#fff; --ht-text:#111; --ht-muted:#3a3a3a; --ht-border:#e6e6e6;">
+  <div class="why-tallow__inner">
+    {% if section.settings.title != blank %}<h2 class="why-tallow__title">{{ section.settings.title }}</h2>{% endif %}
+    {% if section.settings.subtitle != blank %}<p class="why-tallow__text">{{ section.settings.subtitle }}</p>{% endif %}
+    {% if section.settings.quote != blank %}<p class="why-tallow__quote"><span class="stars">★★★★★</span><br>{{ section.settings.quote }}</p>{% endif %}
+
+    <div class="why-tallow__grid">
+      {% for block in section.blocks %}
+        <div class="why-tallow__item" {{ block.shopify_attributes }}>
+          <div class="why-tallow__icon">
+            {%- if block.settings.icon_img != blank -%}
+              {{ block.settings.icon_img | image_url: width: 120 | image_tag: loading: 'lazy', alt: block.settings.heading }}
+            {%- elsif block.settings.icon_svg_html != blank -%}
+              {{ block.settings.icon_svg_html }}
+            {%- elsif block.settings.icon_svg_text != blank -%}
+              {%- assign svg_txt = block.settings.icon_svg_text
+                | strip_newlines | replace: '"',"'" | replace: "#","%23" | replace: "<","%3C" | replace: ">","%3E" -%}
+              <img src="data:image/svg+xml;utf8,{{ svg_txt }}" alt="{{ block.settings.heading }}" width="40" height="40" />
+            {%- endif -%}
+          </div>
+
+          {% if block.settings.heading != blank %}<h3 class="why-tallow__heading">{{ block.settings.heading }}</h3>{% endif %}
+          {% if block.settings.text != blank %}<p class="why-tallow__desc">{{ block.settings.text }}</p>{% endif %}
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<style>
+.why-tallow{width:100%;background:var(--ht-bg);}
+.why-tallow__inner{max-width:1200px;margin:0 auto;padding:72px 24px;text-align:center;color:var(--ht-text);}
+.why-tallow__title{font-size:34px;line-height:1.1;font-weight:800;margin:0 0 10px;color:var(--ht-text);}
+.why-tallow__text{font-size:16px;color:var(--ht-muted);margin:0 0 14px;}
+.why-tallow__quote{font-size:14px;color:#555;margin:18px 0 6px;}
+.stars{font-weight:800;letter-spacing:.1em}
+
+.why-tallow__grid{display:grid;grid-template-columns:repeat(5,1fr);gap:24px;margin-top:28px}
+@media (max-width:1024px){.why-tallow__grid{grid-template-columns:repeat(3,1fr)}}
+@media (max-width:720px){.why-tallow__grid{grid-template-columns:repeat(2,1fr)} .why-tallow__item:nth-child(5){grid-column:1/-1}}
+
+.why-tallow__item{padding:14px 10px}
+.why-tallow__icon{
+  width:64px;height:64px;border:1px solid var(--ht-border);border-radius:999px;margin:0 auto 10px;
+  display:flex;align-items:center;justify-content:center;background:#fff;overflow:hidden
+}
+.why-tallow__icon img, .why-tallow__icon svg{width:40px;height:40px;display:block;margin:auto}
+.why-tallow__icon svg{fill:#000}
+.why-tallow__heading{font-size:16px;font-weight:800;margin:4px 0;color:var(--ht-text)}
+.why-tallow__desc{font-size:14px;color:var(--ht-muted);margin:0}
+
+@media (max-width:640px){
+  .why-tallow__title{font-size:28px}
+  .why-tallow__inner{padding:56px 16px}
+}
+</style>
+
+{% schema %}
+{
+  "name": "HT – Why Tallow",
+  "settings": [
+    { "type": "text", "id": "title", "label": "Heading", "default": "Why Tallow?" },
+    { "type": "text", "id": "subtitle", "label": "Subheading", "default": "This is a test" },
+    { "type": "text", "id": "quote", "label": "Quote", "default": "“This is the only thing that actually healed my skin.” — Amanda L." }
+  ],
+  "blocks": [
+    {
+      "type": "point",
+      "name": "Benefit point",
+      "settings": [
+        { "type": "image_picker", "id": "icon_img", "label": "Icon image (preferred)" },
+        { "type": "html", "id": "icon_svg_html", "label": "OR paste inline SVG (raw HTML)", "info": "Paste full <svg>…</svg>. If image is set, image wins." },
+        { "type": "textarea", "id": "icon_svg_text", "label": "OR paste SVG (auto-convert if HTML is stripped)" },
+        { "type": "text", "id": "heading", "label": "Heading", "default": "Bioavailable Blend" },
+        { "type": "text", "id": "text", "label": "Description", "default": "Mimics skin’s natural oils for fast absorption." }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "HT – Why Tallow",
+      "category": "Text",
+      "blocks": [
+        { "type": "point", "settings": { "heading": "Bioavailable Blend", "text": "Mimics skin’s natural oils for fast absorption." } },
+        { "type": "point", "settings": { "heading": "100% Natural", "text": "Grass-fed, clean, and free from anything fake." } },
+        { "type": "point", "settings": { "heading": "Fast-Acting Relief", "text": "Customers report quick results for dryness and flare-ups." } },
+        { "type": "point", "settings": { "heading": "Safe for All Ages", "text": "Gentle enough for babies. Effective for everyone." } },
+        { "type": "point", "settings": { "heading": "Affordable Skincare", "text": "Real nourishment — not $45 hype pricing." } }
+      ]
+    }
+  ]
+}
+{% endschema %}
