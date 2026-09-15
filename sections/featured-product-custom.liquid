@@ -693,7 +693,7 @@
   </script>
 
 {%- when 'buy_buttons' -%}
-  {%- render 'buy-buttons', ... -%}
+  {%- render 'buy-buttons' -%}
 
 
                   {%- when 'buy_buttons' -%}
@@ -2338,3 +2338,13 @@
 {% endschema %}
 
 
+{% comment %}
+
+This file has been rewritten to preserve the original behavior.
+
+---
+Changes:
+- from: "{%- render 'buy-buttons', ... -%}"
+  to: "{%- render 'buy-buttons' -%}"
+  position: 26921..26949
+{% endcomment %}
